@@ -27,7 +27,7 @@ Then run `composer install`
 
 ## Examples
 
-### Creating a client
+### Create a client
 
 You'll need to begin by creating a client for the API you wish to use, as well as specify the API key you wish to use.
 
@@ -61,7 +61,7 @@ $httpClient = (new \Http\Client\Common\PluginClientBuilder())
 $apiClient = \AlsoAsked\Api\Client::create($httpClient);
 ```
 
-### Fetching your account details
+### Fetch your account details
 
 Use `getAccount` to fetch your account details, this calls the [`GET /v1/account`](https://developers.alsoasked.com/docs/also-asked/b3b98451f0ae2-get-account-information) API endpoint.
 
