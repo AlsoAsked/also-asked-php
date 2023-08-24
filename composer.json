@@ -1,0 +1,50 @@
+{
+    "name": "alsoasked/also-asked-php",
+    "description": "A PHP library for the AlsoAsked API",
+    "version": "1.0.0",
+    "homepage": "https://alsoasked.com",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jack Wakefield",
+            "email": "jack.wakefield@alsoasked.com"
+        }
+    ],
+    "support": {
+        "email": "help@alsoasked.com",
+        "issues": "https://github.com/AlsoAsked/also-asked-php/issues",
+        "source": "https://github.com/AlsoAsked/also-asked-php",
+        "docs": "https://developers.alsoasked.com"
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "jane-php/open-api-runtime": "^7.5",
+        "guzzlehttp/guzzle": "^7.7",
+        "php-http/client-common": "^2.7"
+    },
+    "require-dev": {
+        "jane-php/open-api-3": "dev-next",
+        "nyholm/psr7": "^1.8",
+        "friendsofphp/php-cs-fixer": "^3.23",
+        "adamwojs/php-cs-fixer-phpdoc-force-fqcn": "^2.0",
+        "kubawerlos/php-cs-fixer-custom-fixers": "^3.16",
+        "pedrotroller/php-cs-custom-fixer": "^2.32"
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/AlsoAsked/janephp"
+        }
+    ],
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "AlsoAsked\\Api\\": "generated/"
+        }
+    }
+}

@@ -1,0 +1,3396 @@
+openapi: 3.0.3
+info:
+  title: AlsoAsked
+  description: >-
+    <!-- focus: false -->
+
+    ![AlsoAsked Logo](../assets/images/logo-blue.png)
+
+
+    ## Overview
+
+
+    The **AlsoAsked API** offers developers access to 'People Also Ask' search
+    results. This API provides insights into
+
+    frequently asked questions related to specific search queries.
+
+
+    ## Features
+
+
+    With the **AlsoAsked API**, you can:
+
+
+    - Conduct synchronous (waiting for completion) or asynchronous (immediate
+    return with ID; updates via webhooks)
+      searches.
+    - Retrieve search results.
+
+    - View your past search history.
+
+    - Use webhooks to receive updates on search status, from start to completion
+    or any failures.
+
+    - Access account details, including the count of remaining credits.
+
+
+    ## Requirements
+
+
+    A **Pro subscription** is necessary to use the live API. For developers in
+    the initial stages, our sandbox API
+
+    provides a testing environment without returning actual 'People Also Ask'
+    results. This allows for development and
+
+    testing before committing to a **Pro subscription**.
+
+
+    For more on the **Pro subscription**, visit our [pricing
+    page](https://alsoasked.com/pricing).
+
+
+    ## Support
+
+
+    If you have questions, issues, or feedback, please contact us at
+    [help@alsoasked.com](mailto:help@alsoasked.com).
+  license:
+    name: Proprietary
+    url: https://alsoasked.com/eula
+  termsOfService: https://alsoasked.com/eula
+  contact:
+    name: AlsoAsked Support
+    email: service@alsoasked.com
+    url: https://help.alsoasked.com
+  version: 1.0.0
+servers:
+  - url: https://alsoaskedapi.com/v1
+    description: Live
+  - url: https://sandbox.alsoaskedapi.com/v1
+    description: Sandbox
+tags:
+  - name: Account
+    description: |
+      Operations related to managing an account.
+  - name: Search
+    description: |
+      Operations related to searches.
+paths:
+  /account:
+    get:
+      operationId: getAccount
+      tags:
+        - Account
+      summary: Get account information
+      description: |
+        Get information about the current user's account.
+      security:
+        - apiKey: []
+      responses:
+        '200':
+          $ref: '#/components/responses/GetAccount'
+        '401':
+          $ref: '#/components/responses/MissingApiKeyError'
+        '402':
+          $ref: '#/components/responses/InsufficientPlanError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '429':
+          $ref: '#/components/responses/RateLimitExceededError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/UnderMaintenanceError'
+  /search:
+    get:
+      operationId: listSearches
+      tags:
+        - Search
+      summary: List searches
+      description: >
+        Get a paginated list of searches performed by the current user, sorted
+        by the date they were created, with the most
+
+        recent searches appearing first.
+      security:
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/count'
+        - $ref: '#/components/parameters/page'
+      responses:
+        '200':
+          $ref: '#/components/responses/ListSearches'
+        '401':
+          $ref: '#/components/responses/MissingApiKeyError'
+        '402':
+          $ref: '#/components/responses/InsufficientPlanError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/RateLimitExceededError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/UnderMaintenanceError'
+    post:
+      operationId: performSearch
+      tags:
+        - Search
+      summary: Perform search
+      description: >
+        Perform a search request.
+
+
+        The search request is performed either synchronously, meaning the
+        request hangs until the
+
+        search has completed, or asynchronously, meaning the request returns
+        immediately, which is determined by the `async`
+
+        request parameter.
+
+
+        If the search request completes successfully, as determined by the
+        `status` property, the search
+
+        results are returned in the response body.
+
+
+        Synchronous requests wait for a maximum of 90 seconds for the search to
+
+        complete, until which point the response is returned as if it was an
+        asynchronous request.
+      security:
+        - apiKey: []
+      requestBody:
+        $ref: '#/components/requestBodies/PerformSearch'
+      responses:
+        '200':
+          $ref: '#/components/responses/PerformSearch'
+        '400':
+          $ref: '#/components/responses/InvalidBodyError'
+        '401':
+          $ref: '#/components/responses/MissingApiKeyError'
+        '402':
+          $ref: '#/components/responses/PaymentRequiredError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/RateLimitExceededError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/UnderMaintenanceError'
+  /search/webhook-example:
+    post:
+      operationId: searchWebhookExample
+      tags:
+        - Search
+      summary: Search webhook example
+      description: >
+        This is an **example** of a web hook endpoint used to receive
+        notifications when a search request's status changes.
+
+
+        The `/search/webhook-example` doesn't exist, but is used to demonstrate
+        how to implement a webhook endpoint to
+
+        receive notifications when a search request's status changes, alongside
+        the headers and request body that will be
+
+        sent to the webhook endpoint.
+      parameters:
+        - $ref: '#/components/parameters/X-AlsoAsked-Credits'
+        - $ref: '#/components/parameters/X-AlsoAsked-Api-Version'
+        - $ref: '#/components/parameters/X-AlsoAsked-Signature'
+        - $ref: '#/components/parameters/X-AlsoAsked-Timestamp'
+        - $ref: '#/components/parameters/X-AlsoAsked-Webhook-Event'
+        - $ref: '#/components/parameters/X-AlsoAsked-Environment'
+      requestBody:
+        $ref: '#/components/requestBodies/StatusChangedWebhook'
+      responses:
+        '200':
+          description: |
+            The webhook notification was received successfully.
+        '204':
+          description: |
+            The webhook notification was received successfully.
+  /search/{searchId}:
+    get:
+      operationId: getSearch
+      tags:
+        - Search
+      summary: Get search
+      description: >
+        Get the details of a search request, and if the search request has
+        completed successfully, obtain the search results.
+      security:
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/searchId'
+      responses:
+        '200':
+          $ref: '#/components/responses/GetSearch'
+        '401':
+          $ref: '#/components/responses/MissingApiKeyError'
+        '402':
+          $ref: '#/components/responses/InsufficientPlanError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '429':
+          $ref: '#/components/responses/RateLimitExceededError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/UnderMaintenanceError'
+    delete:
+      operationId: deleteSearch
+      tags:
+        - Search
+      summary: Delete search
+      description: >
+        Delete a search request. The search results will be deleted from the
+        cache and the search result's term masked in the
+
+        search history.
+      security:
+        - apiKey: []
+      parameters:
+        - $ref: '#/components/parameters/searchId'
+      responses:
+        '204':
+          $ref: '#/components/responses/DeleteSearch'
+        '401':
+          $ref: '#/components/responses/MissingApiKeyError'
+        '402':
+          $ref: '#/components/responses/InsufficientPlanError'
+        '403':
+          $ref: '#/components/responses/ForbiddenError'
+        '404':
+          $ref: '#/components/responses/NotFoundError'
+        '429':
+          $ref: '#/components/responses/RateLimitExceededError'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+        '503':
+          $ref: '#/components/responses/UnderMaintenanceError'
+components:
+  headers:
+    X-AlsoAsked-Credits:
+      description: |
+        The number of credits remaining in the account.
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+      example: 100
+    X-RateLimit-Remaining:
+      description: |
+        The number of requests remaining in the current rate limit window.
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+      example: 984
+    X-RateLimit-Limit:
+      description: >
+        The maximum number of requests that can be made in the current rate
+        limit window.
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+      example: 1000
+    Retry-After:
+      description: >
+        The date and time (in UTC) at which a new request will be permitted, in
+        the format "Date: <day-name>, <day> <month>
+
+        <year> <hour>:<minute>:<second> GMT" (RFC 1123 format).
+      schema:
+        type: string
+        format: rfc1123-date-time
+      example: Thu, 11 May 2023 07:28:00 GMT
+    X-RateLimit-Reset:
+      description: >
+        The time at which the current rate limit window resets in UTC epoch
+        seconds.
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+      example: 1672531200
+  schemas:
+    Account:
+      title: Account
+      type: object
+      description: >
+        The account object is returned in the response body of any request that
+        results in the details of an account being
+
+        returned.
+      properties:
+        id:
+          type: string
+          pattern: ^[a-zA-Z0-9]{32}$
+          description: |
+            The unique identifier for the account.
+          example: 6G8QgoK9ar0E1pB7Rl0LN5mxljdAvBWb
+        name:
+          type: string
+          description: |
+            The human-readable name for the account.
+          example: Mantis Toboggan
+        email:
+          type: string
+          format: email
+          description: |
+            The email address associated with the account.
+          example: mantis.toboggan@gmail.com
+        plan_type:
+          type: string
+          description: >
+            The type of plan that the account, or the account's team owner, is
+            subscribed to.
+          enum:
+            - free
+            - basic
+            - lite
+            - pro
+          example: pro
+        credits:
+          type: integer
+          format: int64
+          minimum: 0
+          description: |
+            The number of credits remaining in the account.
+          example: 100
+        credits_reset_at:
+          type: string
+          format: date-time
+          description: >
+            The account credit reset date is the date and time at which the
+            account credits will be reset to default.
+          example: '2023-02-01T00:00:00Z'
+        registered_at:
+          type: string
+          format: date-time
+          description: >
+            The account registration date is the date and time at which the
+            account was registered.
+          example: '2023-01-01T00:00:00Z'
+      example:
+        id: 6G8QgoK9ar0E1pB7Rl0LN5mxljdAvBWb
+        name: Mantis Toboggan
+        email: mantis.toboggan@gmail.com
+        plan_type: pro
+        credits: 100
+        credit_reset_date: '2023-02-01T00:00:00Z'
+        registration_date: '2023-01-01T00:00:00Z'
+    Error:
+      title: Error
+      type: object
+      description: >
+        The error object is returned in the response body of any request that
+        results in an error.
+      properties:
+        status:
+          type: string
+          description: >
+            The error status is an identifier for the type of error that
+            occurred.
+          enum:
+            - internal_server
+            - invalid_api_key
+            - missing_api_key
+            - rate_limit_exceeded
+            - under_maintenance
+            - not_found
+            - validation
+            - insufficient_credits
+            - invalid_body
+            - insufficient_plan
+            - api_access_disabled
+          example: internal_server
+        message:
+          type: string
+          description: >
+            A human-readable message describing the error. This message is
+            intended to be read by a developer and is
+
+            not suitable for display to an end user.
+      example:
+        status: internal_server
+        message: An internal server error has occurred.
+    InvalidApiKeyError:
+      title: Invalid Api Key Error
+      type: object
+      description: >
+        The API key provided in the X-Api-Key request header is invalid. This
+        error is returned when the API key provided in
+
+        the request header has either been deleted or doesn't exist.
+      properties:
+        status:
+          type: string
+          description: >
+            The error status is an identifier for the type of error that
+            occurred.
+          enum:
+            - internal_server
+            - invalid_api_key
+            - missing_api_key
+            - rate_limit_exceeded
+            - under_maintenance
+            - not_found
+            - validation
+            - insufficient_credits
+            - invalid_body
+            - insufficient_plan
+            - api_access_disabled
+          example: invalid_api_key
+          pattern: ^invalid_api_key$
+        message:
+          type: string
+          description: >
+            A human-readable message describing the error. This message is
+            intended to be read by a developer and is
+
+            not suitable for display to an end user.
+          example: The API key provided is invalid.
+      example:
+        status: invalid_api_key
+        message: The API key provided is invalid.
+    ApiAccessDisabledError:
+      title: Api Access Disabled Error
+      type: object
+      description: >
+        Your API access has been disabled. Please contact us through live chat
+        or email support@alsoasked.com for
+
+        more information.
+      properties:
+        status:
+          type: string
+          description: >
+            The error status is an identifier for the type of error that
+            occurred.
+          enum:
+            - internal_server
+            - invalid_api_key
+            - missing_api_key
+            - rate_limit_exceeded
+            - under_maintenance
+            - not_found
+            - validation
+            - insufficient_credits
+            - invalid_body
+            - insufficient_plan
+            - api_access_disabled
+          example: api_access_disabled
+          pattern: ^api_access_disabled$
+        message:
+          type: string
+          description: >
+            A human-readable message describing the error. This message is
+            intended to be read by a developer and is
+
+            not suitable for display to an end user.
+          example: >
+            Your API access has been disabled. Please contact us through live
+            chat or email support@alsoasked.com for
+
+            more information.
+      example:
+        status: api_access_disabled
+        message: >
+          Your API access has been disabled. Please contact us through live chat
+          or email support@alsoasked.com for
+
+          more information.
+    ForbiddenError:
+      title: Forbidden Error
+      type: object
+      description: >
+        The forbidden error object is returned in the response body of any
+        request that results a `403 Forbidden` error.
+      oneOf:
+        - $ref: '#/components/schemas/InvalidApiKeyError'
+        - $ref: '#/components/schemas/ApiAccessDisabledError'
+      discriminator:
+        propertyName: status
+        mapping:
+          invalid_api_key: '#/components/schemas/InvalidApiKeyError'
+          api_access_disabled: '#/components/schemas/ApiAccessDisabledError'
+    SearchRequest:
+      title: Search Request
+      type: object
+      description: >
+        The search request object contains the search terms and options for a
+        search request.
+      properties:
+        id:
+          type: string
+          pattern: ^[a-zA-Z0-9]{32}$
+          description: |
+            The unique identifier for the search request.
+          example: 9J1VrsN0ku2E6xW8M5Xh3zylpfZgIcba
+        terms:
+          anyOf:
+            - type: array
+              items:
+                type: string
+            - type: 'null'
+          description: >
+            The terms searched for. If the search request was deleted, this
+            value will be null.
+          example:
+            - When to plant out broad beans?
+            - How to grow broad beans?
+            - When to harvest broad beans?
+        language:
+          anyOf:
+            - type: string
+              enum:
+                - af
+                - ar
+                - hy
+                - be
+                - bg
+                - ca
+                - zh-CN
+                - zh-TW
+                - hr
+                - cs
+                - da
+                - nl
+                - en
+                - eo
+                - et
+                - tl
+                - fi
+                - fr
+                - de
+                - el
+                - iw
+                - hi
+                - hu
+                - is
+                - id
+                - it
+                - ja
+                - ko
+                - lv
+                - lt
+                - 'no'
+                - fa
+                - pl
+                - pt
+                - ro
+                - ru
+                - sr
+                - sk
+                - sl
+                - es
+                - sw
+                - sv
+                - th
+                - tr
+                - uk
+                - vi
+            - type: 'null'
+          description: >
+            The language code used when performing a search. The language code
+            is a two-letter ISO 639-1 code. If the search
+
+            request was deleted, this value will be null.
+          example: en
+        region:
+          anyOf:
+            - type: string
+              enum:
+                - af
+                - al
+                - dz
+                - as
+                - ad
+                - ao
+                - ai
+                - aq
+                - ag
+                - ar
+                - am
+                - aw
+                - au
+                - at
+                - az
+                - bs
+                - bh
+                - bd
+                - bb
+                - by
+                - be
+                - bz
+                - bj
+                - bm
+                - bt
+                - bo
+                - ba
+                - bw
+                - bv
+                - br
+                - io
+                - bn
+                - bg
+                - bf
+                - bi
+                - kh
+                - cm
+                - ca
+                - cv
+                - ky
+                - cf
+                - td
+                - cl
+                - cn
+                - cx
+                - cc
+                - co
+                - km
+                - cg
+                - cd
+                - ck
+                - cr
+                - ci
+                - hr
+                - cu
+                - cy
+                - cz
+                - dk
+                - dj
+                - dm
+                - do
+                - ec
+                - eg
+                - sv
+                - gq
+                - er
+                - ee
+                - et
+                - fk
+                - fo
+                - fj
+                - fi
+                - fr
+                - gf
+                - pf
+                - tf
+                - ga
+                - gm
+                - ge
+                - de
+                - gh
+                - gi
+                - gr
+                - gl
+                - gd
+                - gp
+                - gu
+                - gt
+                - gn
+                - gw
+                - gy
+                - ht
+                - hm
+                - va
+                - hn
+                - hk
+                - hu
+                - is
+                - in
+                - id
+                - ir
+                - iq
+                - ie
+                - il
+                - it
+                - jm
+                - jp
+                - jo
+                - kz
+                - ke
+                - ki
+                - kp
+                - kr
+                - kw
+                - kg
+                - la
+                - lv
+                - lb
+                - ls
+                - lr
+                - ly
+                - li
+                - lt
+                - lu
+                - mo
+                - mk
+                - mg
+                - mw
+                - my
+                - mv
+                - ml
+                - mt
+                - mh
+                - mq
+                - mr
+                - mu
+                - yt
+                - mx
+                - fm
+                - md
+                - mc
+                - mn
+                - ms
+                - ma
+                - mz
+                - mm
+                - na
+                - nr
+                - np
+                - nl
+                - an
+                - nc
+                - nz
+                - ni
+                - ne
+                - ng
+                - nu
+                - nf
+                - mp
+                - 'no'
+                - om
+                - pk
+                - pw
+                - ps
+                - pa
+                - pg
+                - py
+                - pe
+                - ph
+                - pn
+                - pl
+                - pt
+                - pr
+                - qa
+                - re
+                - ro
+                - ru
+                - rw
+                - sh
+                - kn
+                - lc
+                - pm
+                - vc
+                - ws
+                - sm
+                - st
+                - sa
+                - sn
+                - rs
+                - sc
+                - sl
+                - sg
+                - sk
+                - si
+                - sb
+                - so
+                - za
+                - gs
+                - es
+                - lk
+                - sd
+                - sr
+                - sj
+                - sz
+                - se
+                - ch
+                - sy
+                - tw
+                - tj
+                - tz
+                - th
+                - tl
+                - tg
+                - tk
+                - to
+                - tt
+                - tn
+                - tr
+                - tm
+                - tc
+                - tv
+                - ug
+                - ua
+                - ae
+                - gb
+                - us
+                - um
+                - uy
+                - uz
+                - vu
+                - ve
+                - vn
+                - vg
+                - vi
+                - wf
+                - eh
+                - ye
+                - zm
+                - zw
+            - type: 'null'
+          description: >
+            The region code used when performing a search. The region code is a
+            two-letter ISO 3166-1 code. If the search
+
+            request was deleted, this value will be null.
+          example: us
+        status:
+          anyOf:
+            - type: string
+              enum:
+                - queuing
+                - pending
+                - running
+                - fetching
+                - error
+                - no_results
+                - success
+            - type: 'null'
+          description: >
+            The status of the search request. If the search request was deleted,
+            this value will be null.
+          example: success
+        deleted:
+          type: boolean
+          description: |
+            Whether the search request has been deleted.
+          example: false
+        depth:
+          anyOf:
+            - type: integer
+              format: int32
+              minimum: 2
+              maximum: 3
+            - type: 'null'
+          description: >
+            The depth of the search request. If the search request was deleted,
+            this value will be null.
+          example: 2
+        cached:
+          type: boolean
+          description: >
+            Whether the search request was fetched from the cache. This can be
+            overridden using the `fresh` parameter when
+
+            performing a search. If the search request was deleted, this value
+            will be null.
+          example: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          description: |
+            The date and time at which the search request was created.
+          example: '2023-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: |
+            The date and time at which the search request was last updated.
+          example: '2023-01-01T00:00:10Z'
+        cached_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: 'null'
+          description: >
+            The date and time at which the search request was cached at. If the
+            search request wasn't fetched from the cache,
+
+            or the request has been deleted, this value will be null.
+          example: '2022-12-31T00:00:00Z'
+      example:
+        id: 9J1VrsN0ku2E6xW8M5Xh3zylpfZgIcba
+        terms:
+          - When to plant out broad beans?
+          - How to grow broad beans?
+          - When to harvest broad beans?
+        language: en
+        region: us
+        status: success
+        deleted: false
+        depth: 2
+        cached: true
+        created_at: '2023-01-01T00:00:00Z'
+        updated_at: '2023-01-01T00:00:10Z'
+        cached_at: '2022-12-31T00:00:00Z'
+    PaginatedSearchRequests:
+      title: Paginated Search Results
+      type: object
+      description: >
+        The paginated search results object is returned in the response body of
+        a successful request for previous search
+
+        requests.
+      properties:
+        total:
+          type: integer
+          format: int64
+          description: |
+            The total number of search requests.
+          example: 32
+        page:
+          type: integer
+          format: int64
+          description: |
+            The page of search requests which was returned.
+          example: 1
+        results:
+          type: array
+          description: |
+            The list of search requests.
+          items:
+            $ref: '#/components/schemas/SearchRequest'
+          example:
+            - id: 9J1VrsN0ku2E6xW8M5Xh3zylpfZgIcba
+              terms:
+                - When to plant out broad beans?
+                - How to grow broad beans?
+                - When to harvest broad beans?
+              language: en
+              region: us
+              status: success
+              deleted: false
+              depth: 2
+              cached: false
+              created_at: '2023-01-01T00:00:00Z'
+              updated_at: '2023-01-01T00:00:10Z'
+              cached_at: '2023-01-01T00:00:10Z'
+            - id: 7T1aKjx9Vb8YX2tksUeQwTPn6N0ku2E6
+              terms:
+                - What are the best pasta recipes?
+              language: en
+              region: gb
+              status: success
+              deleted: false
+              depth: 2
+              cached: true
+              created_at: '2023-01-05T10:30:00Z'
+              updated_at: '2023-01-05T10:32:00Z'
+              cached_at: '2023-01-04T03:48:00Z'
+            - id: 5S8YdxC3vq9M5zF1Vb4Xh3zylpfZgIba
+              terms: null
+              language: null
+              region: null
+              status: null
+              deleted: true
+              depth: null
+              cached: null
+              created_at: '2023-01-10T15:00:00Z'
+              updated_at: '2023-01-10T15:05:00Z'
+              cached_at: null
+            - id: 8A6Wp1vHt3E4q0F7c9Xs5n8oZu2Bm1dL
+              terms:
+                - Wie kann man Energie sparen?
+                - Was sind die besten Tipps zum Energiesparen?
+                - Wie senke ich meinen Energieverbrauch?
+              language: de
+              region: de
+              status: success
+              deleted: false
+              depth: 3
+              cached: false
+              created_at: '2023-01-15T18:45:00Z'
+              updated_at: '2023-01-15T18:50:00Z'
+              cached_at: '2023-01-15T18:50:00Z'
+      example:
+        total: 32
+        page: 1
+        results:
+          - id: 9J1VrsN0ku2E6xW8M5Xh3zylpfZgIcba
+            terms:
+              - When to plant out broad beans?
+              - How to grow broad beans?
+              - When to harvest broad beans?
+            language: en
+            region: us
+            status: success
+            deleted: false
+            depth: 2
+            cached: false
+            created_at: '2023-01-01T00:00:00Z'
+            updated_at: '2023-01-01T00:00:10Z'
+            cached_at: '2023-01-01T00:00:10Z'
+          - id: 7T1aKjx9Vb8YX2tksUeQwTPn6N0ku2E6
+            terms:
+              - What are the best pasta recipes?
+            language: en
+            region: gb
+            status: success
+            deleted: false
+            depth: 2
+            cached: true
+            created_at: '2023-01-05T10:30:00Z'
+            updated_at: '2023-01-05T10:32:00Z'
+            cached_at: '2023-01-04T03:48:00Z'
+          - id: 5S8YdxC3vq9M5zF1Vb4Xh3zylpfZgIba
+            terms: null
+            language: null
+            region: null
+            status: null
+            deleted: true
+            depth: null
+            cached: null
+            created_at: '2023-01-10T15:00:00Z'
+            updated_at: '2023-01-10T15:05:00Z'
+            cached_at: null
+          - id: 8A6Wp1vHt3E4q0F7c9Xs5n8oZu2Bm1dL
+            terms:
+              - Wie kann man Energie sparen?
+              - Was sind die besten Tipps zum Energiesparen?
+              - Wie senke ich meinen Energieverbrauch?
+            language: de
+            region: de
+            status: success
+            deleted: false
+            depth: 3
+            cached: false
+            created_at: '2023-01-15T18:45:00Z'
+            updated_at: '2023-01-15T18:50:00Z'
+            cached_at: '2023-01-15T18:50:00Z'
+    SearchRequestOptions:
+      title: Search Request Options
+      type: object
+      description: >
+        The search request object is used to specify the search criteria for a
+        search request.
+      properties:
+        terms:
+          type: array
+          description: |
+            The terms to search for.
+          items:
+            type: string
+            description: |
+              The term to search for.
+            minLength: 1
+            maxLength: 4127
+          minItems: 1
+          maxItems: 1000
+          uniqueItems: true
+          example:
+            - When to plant out broad beans?
+            - How to grow broad beans?
+            - When to harvest broad beans?
+        language:
+          type: string
+          description: |
+            The language to use when searching for the terms.
+          enum:
+            - af
+            - ar
+            - hy
+            - be
+            - bg
+            - ca
+            - zh-CN
+            - zh-TW
+            - hr
+            - cs
+            - da
+            - nl
+            - en
+            - eo
+            - et
+            - tl
+            - fi
+            - fr
+            - de
+            - el
+            - iw
+            - hi
+            - hu
+            - is
+            - id
+            - it
+            - ja
+            - ko
+            - lv
+            - lt
+            - 'no'
+            - fa
+            - pl
+            - pt
+            - ro
+            - ru
+            - sr
+            - sk
+            - sl
+            - es
+            - sw
+            - sv
+            - th
+            - tr
+            - uk
+            - vi
+          example: en
+          default: en
+        region:
+          type: string
+          description: >
+            The region code used when performing a search. The region code is a
+            two-letter ISO 3166-1 code.
+          enum:
+            - af
+            - al
+            - dz
+            - as
+            - ad
+            - ao
+            - ai
+            - aq
+            - ag
+            - ar
+            - am
+            - aw
+            - au
+            - at
+            - az
+            - bs
+            - bh
+            - bd
+            - bb
+            - by
+            - be
+            - bz
+            - bj
+            - bm
+            - bt
+            - bo
+            - ba
+            - bw
+            - bv
+            - br
+            - io
+            - bn
+            - bg
+            - bf
+            - bi
+            - kh
+            - cm
+            - ca
+            - cv
+            - ky
+            - cf
+            - td
+            - cl
+            - cn
+            - cx
+            - cc
+            - co
+            - km
+            - cg
+            - cd
+            - ck
+            - cr
+            - ci
+            - hr
+            - cu
+            - cy
+            - cz
+            - dk
+            - dj
+            - dm
+            - do
+            - ec
+            - eg
+            - sv
+            - gq
+            - er
+            - ee
+            - et
+            - fk
+            - fo
+            - fj
+            - fi
+            - fr
+            - gf
+            - pf
+            - tf
+            - ga
+            - gm
+            - ge
+            - de
+            - gh
+            - gi
+            - gr
+            - gl
+            - gd
+            - gp
+            - gu
+            - gt
+            - gn
+            - gw
+            - gy
+            - ht
+            - hm
+            - va
+            - hn
+            - hk
+            - hu
+            - is
+            - in
+            - id
+            - ir
+            - iq
+            - ie
+            - il
+            - it
+            - jm
+            - jp
+            - jo
+            - kz
+            - ke
+            - ki
+            - kp
+            - kr
+            - kw
+            - kg
+            - la
+            - lv
+            - lb
+            - ls
+            - lr
+            - ly
+            - li
+            - lt
+            - lu
+            - mo
+            - mk
+            - mg
+            - mw
+            - my
+            - mv
+            - ml
+            - mt
+            - mh
+            - mq
+            - mr
+            - mu
+            - yt
+            - mx
+            - fm
+            - md
+            - mc
+            - mn
+            - ms
+            - ma
+            - mz
+            - mm
+            - na
+            - nr
+            - np
+            - nl
+            - an
+            - nc
+            - nz
+            - ni
+            - ne
+            - ng
+            - nu
+            - nf
+            - mp
+            - 'no'
+            - om
+            - pk
+            - pw
+            - ps
+            - pa
+            - pg
+            - py
+            - pe
+            - ph
+            - pn
+            - pl
+            - pt
+            - pr
+            - qa
+            - re
+            - ro
+            - ru
+            - rw
+            - sh
+            - kn
+            - lc
+            - pm
+            - vc
+            - ws
+            - sm
+            - st
+            - sa
+            - sn
+            - rs
+            - sc
+            - sl
+            - sg
+            - sk
+            - si
+            - sb
+            - so
+            - za
+            - gs
+            - es
+            - lk
+            - sd
+            - sr
+            - sj
+            - sz
+            - se
+            - ch
+            - sy
+            - tw
+            - tj
+            - tz
+            - th
+            - tl
+            - tg
+            - tk
+            - to
+            - tt
+            - tn
+            - tr
+            - tm
+            - tc
+            - tv
+            - ug
+            - ua
+            - ae
+            - gb
+            - us
+            - um
+            - uy
+            - uz
+            - vu
+            - ve
+            - vn
+            - vg
+            - vi
+            - wf
+            - eh
+            - ye
+            - zm
+            - zw
+          example: us
+          default: us
+        depth:
+          type: integer
+          format: int32
+          description: >
+            The depth of the search determines the number of hierarchical levels
+            of questions returned in the results.
+
+            A greater depth value retrieves questions nested within additional
+            layers of subquestions. Be aware that
+
+            increasing the depth will increase the number of credits consumed. A
+            search depth of 2 will consume 1 credit,
+
+            whereas a depth of 3 will consume 4 credits.
+          example: 2
+          default: 2
+          minimum: 2
+          maximum: 3
+        fresh:
+          type: boolean
+          description: >
+            The fresh flag determines whether the search results are retrieved
+            from the cache or live from the search engine.
+          example: false
+          default: false
+        async:
+          type: boolean
+          description: >
+            The async flag determines whether to run the search in a blocking
+            (synchronous) or non-blocking (asynchronous)
+
+            manner. When a search request is performed asynchronously, the
+            webhooks configured for the account will be
+
+            notified when the status of a search changes. When a search is
+            synchronous, the search results are returned in
+
+            the response body when the search is complete.
+          example: false
+          default: false
+        notify_webhooks:
+          type: boolean
+          description: >
+            The notify webhooks flag determines whether to notify webhooks when
+            the status of a search changes. Webhooks are
+
+            notified regardless of whether the search is performed synchronously
+            or asynchronously. Use this flag to disable
+
+            webhook notifications for synchronous searches which do not require
+            webhook notifications.
+          example: true
+          default: true
+      required:
+        - terms
+      example:
+        terms:
+          - When to plant out broad beans?
+          - How to grow broad beans?
+          - When to harvest broad beans?
+        language: en
+        region: us
+        depth: 2
+        fresh: false
+        async: false
+        notify_webhooks: false
+    SearchResult:
+      title: Search Result
+      type: object
+      description: >
+        The search result object contains a question and answer for a search
+        term. The search result itself contains child
+
+        results related to the search result's question.
+      properties:
+        question:
+          type: string
+          description: |
+            The question.
+          example: When to plant out broad beans?
+        answer_excerpt:
+          type: string
+          description: |
+            The excerpt of the answer.
+          example: >
+            Broad beans can be planted out from mid-April to mid-May. If you are
+            growing them in a greenhouse, you can
+
+            plant them out from mid-March.
+        answer_href:
+          type: string
+          description: |
+            The URL containing the answer.
+          example: >-
+            https://www.gardenersworld.com/how-to/grow/broad-beans/when-to-plant-out-broad-beans/
+        answer_page_title:
+          type: string
+          description: |
+            The title of the page containing the answer.
+          example: >-
+            When to plant out broad beans? | Broad beans | Grow | Gardeners'
+            World Magazine
+        results:
+          type: array
+          description: >
+            The list of child search results related to the search result's
+            question.
+          items:
+            $ref: '#/components/schemas/SearchResult'
+          example:
+            - question: When to plant out broad beans?
+              answer_excerpt: >
+                Broad beans can be planted out from mid-April to mid-May. If you
+                are growing them in a greenhouse, you can
+
+                plant them out from mid-March.
+              answer_href: >-
+                https://www.gardenersworld.com/how-to/grow/broad-beans/when-to-plant-out-broad-beans/
+              answer_page_title: >-
+                When to plant out broad beans? | Broad beans | Grow | Gardeners'
+                World Magazine
+              results:
+                - question: When can I transplant broad beans?
+                  answer_excerpt: >
+                    Broad beans prefer to be planted in the position where they
+                    are to grow, but can be planted in individual
+
+                    pots during the autumn and transplanted in to the ground in
+                    the spring.
+                  answer_href: >
+                    https://www.rhs.org.uk/education-learning/gardening-children-schools/family-activities/grow-it/grow/broad-beans
+                  answer_page_title: Grow broad beans with children / RHS Gardening
+                  results:
+                    - question: Do you get a second crop of broad beans?
+                      answer_excerpt: >
+                        Broad beans are a cool season crop, so they will not
+                        produce a second crop. However, you can plant
+
+                        broad beans in the spring and again in the fall.
+                      answer_href: >-
+                        https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                      answer_page_title: Growing Broad Beans - Gardening Know How
+                      results: []
+                    - question: What not to plant with broad beans?
+                      answer_excerpt: >
+                        Broad beans are a cool season crop, so they will not
+                        produce a second crop. However, you can plant
+
+                        broad beans in the spring and again in the fall.
+                      answer_href: >-
+                        https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                      answer_page_title: Growing Broad Beans - Gardening Know How
+                      results: []
+                    - question: How to grow broad beans in a greenhouse?
+                      answer_excerpt: >
+                        Broad beans are a cool season crop, so they will not
+                        produce a second crop. However, you can plant
+
+                        broad beans in the spring and again in the fall.
+                      answer_href: >-
+                        https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                      answer_page_title: Growing Broad Beans - Gardening Know How
+                      results: []
+                - question: Do broad beans need to be dried before planting?
+                  answer_excerpt: >
+                    Next to potatoes, broad beans are one of the easiest staples
+                    to grow. Dried broad beans, or fava beans, are
+
+                    simply beans left in the pod until they rattle. When you've
+                    had your fill of fresh, leave the rest on the
+
+                    plant to dry. If it's wet, haul the pods indoors, to shell
+                    and dry somewhere warm.
+                  answer_href: >-
+                    https://www.gardeningknowhow.com/edible/vegetables/broad-bean/drying-broad-beans.htm
+                  answer_page_title: Drying Broad Beans - Gardening Know How
+                  results: []
+      example:
+        question: When to plant out broad beans?
+        answer_excerpt: >
+          Broad beans can be planted out from mid-April to mid-May. If you are
+          growing them in a greenhouse, you can
+
+          plant them out from mid-March.
+        answer_href: >-
+          https://www.gardenersworld.com/how-to/grow/broad-beans/when-to-plant-out-broad-beans/
+        answer_page_title: >-
+          When to plant out broad beans? | Broad beans | Grow | Gardeners' World
+          Magazine
+        results:
+          - question: When can I transplant broad beans?
+            answer_excerpt: >
+              Broad beans prefer to be planted in the position where they are to
+              grow, but can be planted in individual
+
+              pots during the autumn and transplanted in to the ground in the
+              spring.
+            answer_href: >
+              https://www.rhs.org.uk/education-learning/gardening-children-schools/family-activities/grow-it/grow/broad-beans
+            answer_page_title: Grow broad beans with children / RHS Gardening
+            results:
+              - question: Do you get a second crop of broad beans?
+                answer_excerpt: >
+                  Broad beans are a cool season crop, so they will not produce a
+                  second crop. However, you can plant
+
+                  broad beans in the spring and again in the fall.
+                answer_href: >-
+                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                answer_page_title: Growing Broad Beans - Gardening Know How
+                results: []
+              - question: What not to plant with broad beans?
+                answer_excerpt: >
+                  Broad beans are a cool season crop, so they will not produce a
+                  second crop. However, you can plant
+
+                  broad beans in the spring and again in the fall.
+                answer_href: >-
+                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                answer_page_title: Growing Broad Beans - Gardening Know How
+                results: []
+              - question: How to grow broad beans in a greenhouse?
+                answer_excerpt: >
+                  Broad beans are a cool season crop, so they will not produce a
+                  second crop. However, you can plant
+
+                  broad beans in the spring and again in the fall.
+                answer_href: >-
+                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                answer_page_title: Growing Broad Beans - Gardening Know How
+                results: []
+          - question: Do broad beans need to be dried before planting?
+            answer_excerpt: >
+              Next to potatoes, broad beans are one of the easiest staples to
+              grow. Dried broad beans, or fava beans, are
+
+              simply beans left in the pod until they rattle. When you've had
+              your fill of fresh, leave the rest on the
+
+              plant to dry. If it's wet, haul the pods indoors, to shell and dry
+              somewhere warm.
+            answer_href: >-
+              https://www.gardeningknowhow.com/edible/vegetables/broad-bean/drying-broad-beans.htm
+            answer_page_title: Drying Broad Beans - Gardening Know How
+            results: []
+    SearchQuery:
+      title: Search Query
+      type: object
+      description: >
+        The search query object contains an individual search term for a search
+        request. If the search request has completed
+
+        with a status of success, the results will be included.
+      properties:
+        term:
+          type: string
+          description: |
+            The search term.
+          example: When to plant out broad beans?
+        language_fallback:
+          type: boolean
+          description: >
+            Whether the search term was searched for in the specified language,
+            or, if no results were returned, the search
+
+            term was searched for in the default language for the specified
+            region.
+          example: false
+        region_fallback:
+          type: boolean
+          description: >
+            Whether the search term was searched for in the specified region,
+            or, if no results were returned, the search
+
+            term was searched for in the default region for the specified
+            language.
+          example: false
+        results:
+          type: array
+          description: >
+            The list of question and answers for the search term. The list will
+            be empty if the search request has not
+
+            completed successfully.
+          items:
+            $ref: '#/components/schemas/SearchResult'
+          example:
+            - question: When to plant out broad beans?
+              answer_excerpt: >
+                Broad beans can be planted out from mid-April to mid-May. If you
+                are growing them in a greenhouse, you can
+
+                plant them out from mid-March.
+              answer_href: >-
+                https://www.gardenersworld.com/how-to/grow/broad-beans/when-to-plant-out-broad-beans/
+              answer_page_title: >-
+                When to plant out broad beans? | Broad beans | Grow | Gardeners'
+                World Magazine
+              results:
+                - question: When can I transplant broad beans?
+                  answer_excerpt: >
+                    Broad beans prefer to be planted in the position where they
+                    are to grow, but can be planted in individual
+
+                    pots during the autumn and transplanted in to the ground in
+                    the spring.
+                  answer_href: >
+                    https://www.rhs.org.uk/education-learning/gardening-children-schools/family-activities/grow-it/grow/broad-beans
+                  answer_page_title: Grow broad beans with children / RHS Gardening
+                  results:
+                    - question: Do you get a second crop of broad beans?
+                      answer_excerpt: >
+                        Broad beans are a cool season crop, so they will not
+                        produce a second crop. However, you can plant
+
+                        broad beans in the spring and again in the fall.
+                      answer_href: >-
+                        https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                      answer_page_title: Growing Broad Beans - Gardening Know How
+                      results: []
+                    - question: What not to plant with broad beans?
+                      answer_excerpt: >
+                        Broad beans are a cool season crop, so they will not
+                        produce a second crop. However, you can plant
+
+                        broad beans in the spring and again in the fall.
+                      answer_href: >-
+                        https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                      answer_page_title: Growing Broad Beans - Gardening Know How
+                      results: []
+                    - question: How to grow broad beans in a greenhouse?
+                      answer_excerpt: >
+                        Broad beans are a cool season crop, so they will not
+                        produce a second crop. However, you can plant
+
+                        broad beans in the spring and again in the fall.
+                      answer_href: >-
+                        https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                      answer_page_title: Growing Broad Beans - Gardening Know How
+                      results: []
+                - question: Do broad beans need to be dried before planting?
+                  answer_excerpt: >
+                    Next to potatoes, broad beans are one of the easiest staples
+                    to grow. Dried broad beans, or fava beans, are
+
+                    simply beans left in the pod until they rattle. When you've
+                    had your fill of fresh, leave the rest on the
+
+                    plant to dry. If it's wet, haul the pods indoors, to shell
+                    and dry somewhere warm.
+                  answer_href: >-
+                    https://www.gardeningknowhow.com/edible/vegetables/broad-bean/drying-broad-beans.htm
+                  answer_page_title: Drying Broad Beans - Gardening Know How
+                  results: []
+      example:
+        term: When to plant out broad beans?
+        language_fallback: false
+        region_fallback: false
+        results:
+          - question: When to plant out broad beans?
+            answer_excerpt: >
+              Broad beans can be planted out from mid-April to mid-May. If you
+              are growing them in a greenhouse, you can
+
+              plant them out from mid-March.
+            answer_href: >-
+              https://www.gardenersworld.com/how-to/grow/broad-beans/when-to-plant-out-broad-beans/
+            answer_page_title: >-
+              When to plant out broad beans? | Broad beans | Grow | Gardeners'
+              World Magazine
+            results:
+              - question: When can I transplant broad beans?
+                answer_excerpt: >
+                  Broad beans prefer to be planted in the position where they
+                  are to grow, but can be planted in individual
+
+                  pots during the autumn and transplanted in to the ground in
+                  the spring.
+                answer_href: >
+                  https://www.rhs.org.uk/education-learning/gardening-children-schools/family-activities/grow-it/grow/broad-beans
+                answer_page_title: Grow broad beans with children / RHS Gardening
+                results:
+                  - question: Do you get a second crop of broad beans?
+                    answer_excerpt: >
+                      Broad beans are a cool season crop, so they will not
+                      produce a second crop. However, you can plant
+
+                      broad beans in the spring and again in the fall.
+                    answer_href: >-
+                      https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                    answer_page_title: Growing Broad Beans - Gardening Know How
+                    results: []
+                  - question: What not to plant with broad beans?
+                    answer_excerpt: >
+                      Broad beans are a cool season crop, so they will not
+                      produce a second crop. However, you can plant
+
+                      broad beans in the spring and again in the fall.
+                    answer_href: >-
+                      https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                    answer_page_title: Growing Broad Beans - Gardening Know How
+                    results: []
+                  - question: How to grow broad beans in a greenhouse?
+                    answer_excerpt: >
+                      Broad beans are a cool season crop, so they will not
+                      produce a second crop. However, you can plant
+
+                      broad beans in the spring and again in the fall.
+                    answer_href: >-
+                      https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                    answer_page_title: Growing Broad Beans - Gardening Know How
+                    results: []
+              - question: Do broad beans need to be dried before planting?
+                answer_excerpt: >
+                  Next to potatoes, broad beans are one of the easiest staples
+                  to grow. Dried broad beans, or fava beans, are
+
+                  simply beans left in the pod until they rattle. When you've
+                  had your fill of fresh, leave the rest on the
+
+                  plant to dry. If it's wet, haul the pods indoors, to shell and
+                  dry somewhere warm.
+                answer_href: >-
+                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/drying-broad-beans.htm
+                answer_page_title: Drying Broad Beans - Gardening Know How
+                results: []
+    SearchRequestResults:
+      title: Search Request Results
+      type: object
+      description: >
+        The search request results object contains the search terms and options
+        for a search request. If the search request
+
+        has completed with a status of success, the results will be included in
+        the response.
+      properties:
+        id:
+          type: string
+          pattern: ^[a-zA-Z0-9]{32}$
+          description: |
+            The unique identifier for the search request.
+          example: 9J1VrsN0ku2E6xW8M5Xh3zylpfZgIcba
+        queries:
+          type: array
+          nullable: true
+          description: >
+            The search queries that were performed as part of the request. If
+            the search request was deleted, this value will
+
+            be null.
+          items:
+            $ref: '#/components/schemas/SearchQuery'
+          example:
+            - term: When to plant out broad beans?
+              language_fallback: false
+              region_fallback: false
+              results:
+                - question: When to plant out broad beans?
+                  answer_excerpt: >
+                    Broad beans can be planted out from mid-April to mid-May. If
+                    you are growing them in a greenhouse, you can
+
+                    plant them out from mid-March.
+                  answer_href: >-
+                    https://www.gardenersworld.com/how-to/grow/broad-beans/when-to-plant-out-broad-beans/
+                  answer_page_title: >-
+                    When to plant out broad beans? | Broad beans | Grow |
+                    Gardeners' World Magazine
+                  results:
+                    - question: When can I transplant broad beans?
+                      answer_excerpt: >
+                        Broad beans prefer to be planted in the position where
+                        they are to grow, but can be planted in individual
+
+                        pots during the autumn and transplanted in to the ground
+                        in the spring.
+                      answer_href: >
+                        https://www.rhs.org.uk/education-learning/gardening-children-schools/family-activities/grow-it/grow/broad-beans
+                      answer_page_title: Grow broad beans with children / RHS Gardening
+                      results:
+                        - question: Do you get a second crop of broad beans?
+                          answer_excerpt: >
+                            Broad beans are a cool season crop, so they will not
+                            produce a second crop. However, you can plant
+
+                            broad beans in the spring and again in the fall.
+                          answer_href: >-
+                            https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                          answer_page_title: Growing Broad Beans - Gardening Know How
+                          results: []
+                        - question: What not to plant with broad beans?
+                          answer_excerpt: >
+                            Broad beans are a cool season crop, so they will not
+                            produce a second crop. However, you can plant
+
+                            broad beans in the spring and again in the fall.
+                          answer_href: >-
+                            https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                          answer_page_title: Growing Broad Beans - Gardening Know How
+                          results: []
+                        - question: How to grow broad beans in a greenhouse?
+                          answer_excerpt: >
+                            Broad beans are a cool season crop, so they will not
+                            produce a second crop. However, you can plant
+
+                            broad beans in the spring and again in the fall.
+                          answer_href: >-
+                            https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                          answer_page_title: Growing Broad Beans - Gardening Know How
+                          results: []
+                    - question: Do broad beans need to be dried before planting?
+                      answer_excerpt: >
+                        Next to potatoes, broad beans are one of the easiest
+                        staples to grow. Dried broad beans, or fava beans, are
+
+                        simply beans left in the pod until they rattle. When
+                        you've had your fill of fresh, leave the rest on the
+
+                        plant to dry. If it's wet, haul the pods indoors, to
+                        shell and dry somewhere warm.
+                      answer_href: >-
+                        https://www.gardeningknowhow.com/edible/vegetables/broad-bean/drying-broad-beans.htm
+                      answer_page_title: Drying Broad Beans - Gardening Know How
+                      results: []
+        language:
+          type: string
+          nullable: true
+          description: >
+            The language code used when performing a search. The language code
+            is a two-letter ISO 639-1 code. If the search
+
+            request was deleted, this value will be null.
+          enum:
+            - af
+            - ar
+            - hy
+            - be
+            - bg
+            - ca
+            - zh-CN
+            - zh-TW
+            - hr
+            - cs
+            - da
+            - nl
+            - en
+            - eo
+            - et
+            - tl
+            - fi
+            - fr
+            - de
+            - el
+            - iw
+            - hi
+            - hu
+            - is
+            - id
+            - it
+            - ja
+            - ko
+            - lv
+            - lt
+            - 'no'
+            - fa
+            - pl
+            - pt
+            - ro
+            - ru
+            - sr
+            - sk
+            - sl
+            - es
+            - sw
+            - sv
+            - th
+            - tr
+            - uk
+            - vi
+          example: en
+        region:
+          type: string
+          nullable: true
+          description: >
+            The region code used when performing a search. The region code is a
+            two-letter ISO 3166-1 code. If the search
+
+            request was deleted, this value will be null.
+          enum:
+            - af
+            - al
+            - dz
+            - as
+            - ad
+            - ao
+            - ai
+            - aq
+            - ag
+            - ar
+            - am
+            - aw
+            - au
+            - at
+            - az
+            - bs
+            - bh
+            - bd
+            - bb
+            - by
+            - be
+            - bz
+            - bj
+            - bm
+            - bt
+            - bo
+            - ba
+            - bw
+            - bv
+            - br
+            - io
+            - bn
+            - bg
+            - bf
+            - bi
+            - kh
+            - cm
+            - ca
+            - cv
+            - ky
+            - cf
+            - td
+            - cl
+            - cn
+            - cx
+            - cc
+            - co
+            - km
+            - cg
+            - cd
+            - ck
+            - cr
+            - ci
+            - hr
+            - cu
+            - cy
+            - cz
+            - dk
+            - dj
+            - dm
+            - do
+            - ec
+            - eg
+            - sv
+            - gq
+            - er
+            - ee
+            - et
+            - fk
+            - fo
+            - fj
+            - fi
+            - fr
+            - gf
+            - pf
+            - tf
+            - ga
+            - gm
+            - ge
+            - de
+            - gh
+            - gi
+            - gr
+            - gl
+            - gd
+            - gp
+            - gu
+            - gt
+            - gn
+            - gw
+            - gy
+            - ht
+            - hm
+            - va
+            - hn
+            - hk
+            - hu
+            - is
+            - in
+            - id
+            - ir
+            - iq
+            - ie
+            - il
+            - it
+            - jm
+            - jp
+            - jo
+            - kz
+            - ke
+            - ki
+            - kp
+            - kr
+            - kw
+            - kg
+            - la
+            - lv
+            - lb
+            - ls
+            - lr
+            - ly
+            - li
+            - lt
+            - lu
+            - mo
+            - mk
+            - mg
+            - mw
+            - my
+            - mv
+            - ml
+            - mt
+            - mh
+            - mq
+            - mr
+            - mu
+            - yt
+            - mx
+            - fm
+            - md
+            - mc
+            - mn
+            - ms
+            - ma
+            - mz
+            - mm
+            - na
+            - nr
+            - np
+            - nl
+            - an
+            - nc
+            - nz
+            - ni
+            - ne
+            - ng
+            - nu
+            - nf
+            - mp
+            - 'no'
+            - om
+            - pk
+            - pw
+            - ps
+            - pa
+            - pg
+            - py
+            - pe
+            - ph
+            - pn
+            - pl
+            - pt
+            - pr
+            - qa
+            - re
+            - ro
+            - ru
+            - rw
+            - sh
+            - kn
+            - lc
+            - pm
+            - vc
+            - ws
+            - sm
+            - st
+            - sa
+            - sn
+            - rs
+            - sc
+            - sl
+            - sg
+            - sk
+            - si
+            - sb
+            - so
+            - za
+            - gs
+            - es
+            - lk
+            - sd
+            - sr
+            - sj
+            - sz
+            - se
+            - ch
+            - sy
+            - tw
+            - tj
+            - tz
+            - th
+            - tl
+            - tg
+            - tk
+            - to
+            - tt
+            - tn
+            - tr
+            - tm
+            - tc
+            - tv
+            - ug
+            - ua
+            - ae
+            - gb
+            - us
+            - um
+            - uy
+            - uz
+            - vu
+            - ve
+            - vn
+            - vg
+            - vi
+            - wf
+            - eh
+            - ye
+            - zm
+            - zw
+          example: us
+        status:
+          type: string
+          nullable: true
+          description: >
+            The status of the search request. If the search request was deleted,
+            this value will be null.
+          enum:
+            - queuing
+            - pending
+            - running
+            - fetching
+            - error
+            - no_results
+            - success
+          example: success
+        deleted:
+          type: boolean
+          description: |
+            Whether the search request has been deleted.
+          example: false
+        depth:
+          type: integer
+          format: int32
+          nullable: true
+          minimum: 3
+          maximum: 4
+          description: >
+            The depth of the search request. If the search request was deleted,
+            this value will be null.
+          example: 3
+        cached:
+          type: boolean
+          nullable: true
+          description: >
+            Whether the search request was fetched from the cache. This can be
+            overridden using the `fresh` parameter when
+
+            performing a search. If the search request was deleted, this value
+            will be null.
+          example: true
+        created_at:
+          type: string
+          format: date-time
+          description: |
+            The date and time at which the search request was created.
+          example: '2023-01-01T00:00:00Z'
+        updated_at:
+          type: string
+          format: date-time
+          description: |
+            The date and time at which the search request was last updated.
+          example: '2023-01-01T00:00:10Z'
+        cached_at:
+          type: string
+          nullable: true
+          format: date-time
+          description: >
+            The date and time at which the search request was cached at. If the
+            search request wasn't fetched from the cache,
+
+            or the request has been deleted, this value will be null.
+          example: '2022-12-31T00:00:00Z'
+      example:
+        id: 9J1VrsN0ku2E6xW8M5Xh3zylpfZgIcba
+        queries:
+          - term: When to plant out broad beans?
+            language_fallback: false
+            region_fallback: false
+            results:
+              - question: When to plant out broad beans?
+                answer_excerpt: >
+                  Broad beans can be planted out from mid-April to mid-May. If
+                  you are growing them in a greenhouse, you can
+
+                  plant them out from mid-March.
+                answer_href: >-
+                  https://www.gardenersworld.com/how-to/grow/broad-beans/when-to-plant-out-broad-beans/
+                answer_page_title: >-
+                  When to plant out broad beans? | Broad beans | Grow |
+                  Gardeners' World Magazine
+                results:
+                  - question: When can I transplant broad beans?
+                    answer_excerpt: >
+                      Broad beans prefer to be planted in the position where
+                      they are to grow, but can be planted in individual
+
+                      pots during the autumn and transplanted in to the ground
+                      in the spring.
+                    answer_href: >
+                      https://www.rhs.org.uk/education-learning/gardening-children-schools/family-activities/grow-it/grow/broad-beans
+                    answer_page_title: Grow broad beans with children / RHS Gardening
+                    results:
+                      - question: Do you get a second crop of broad beans?
+                        answer_excerpt: >
+                          Broad beans are a cool season crop, so they will not
+                          produce a second crop. However, you can plant
+
+                          broad beans in the spring and again in the fall.
+                        answer_href: >-
+                          https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                        answer_page_title: Growing Broad Beans - Gardening Know How
+                        results: []
+                      - question: What not to plant with broad beans?
+                        answer_excerpt: >
+                          Broad beans are a cool season crop, so they will not
+                          produce a second crop. However, you can plant
+
+                          broad beans in the spring and again in the fall.
+                        answer_href: >-
+                          https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                        answer_page_title: Growing Broad Beans - Gardening Know How
+                        results: []
+                      - question: How to grow broad beans in a greenhouse?
+                        answer_excerpt: >
+                          Broad beans are a cool season crop, so they will not
+                          produce a second crop. However, you can plant
+
+                          broad beans in the spring and again in the fall.
+                        answer_href: >-
+                          https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                        answer_page_title: Growing Broad Beans - Gardening Know How
+                        results: []
+                  - question: Do broad beans need to be dried before planting?
+                    answer_excerpt: >
+                      Next to potatoes, broad beans are one of the easiest
+                      staples to grow. Dried broad beans, or fava beans, are
+
+                      simply beans left in the pod until they rattle. When
+                      you've had your fill of fresh, leave the rest on the
+
+                      plant to dry. If it's wet, haul the pods indoors, to shell
+                      and dry somewhere warm.
+                    answer_href: >-
+                      https://www.gardeningknowhow.com/edible/vegetables/broad-bean/drying-broad-beans.htm
+                    answer_page_title: Drying Broad Beans - Gardening Know How
+                    results: []
+        language: en
+        region: us
+        status: success
+        deleted: false
+        depth: 2
+        cached: true
+        created_at: '2023-01-01T00:00:00Z'
+        updated_at: '2023-01-01T00:00:10Z'
+        cached_at: '2022-12-31T00:00:00Z'
+    InsufficientPlanError:
+      title: Insufficient Plan Error
+      type: object
+      description: >
+        Your account's plan doesn't allow you to perform this request. You can
+        upgrade your account to the Pro plan to access
+
+        the live API.
+      properties:
+        status:
+          type: string
+          description: >
+            The error status is an identifier for the type of error that
+            occurred.
+          enum:
+            - internal_server
+            - invalid_api_key
+            - missing_api_key
+            - rate_limit_exceeded
+            - under_maintenance
+            - not_found
+            - validation
+            - insufficient_credits
+            - invalid_body
+            - insufficient_plan
+            - api_access_disabled
+          example: insufficient_plan
+          pattern: ^insufficient_plan$
+        message:
+          type: string
+          description: >
+            A human-readable message describing the error. This message is
+            intended to be read by a developer and is
+
+            not suitable for display to an end user.
+          example: You must upgrade your account to a Pro plan to access the live API.
+      example:
+        status: insufficient_plan
+        message: You must upgrade your account to a Pro plan to access the live API.
+    InsufficientCreditsError:
+      title: Insufficient Credits Error
+      type: object
+      description: >
+        You don't have enough credits to perform this request. You can upgrade
+        your plan to get more credits, or
+
+        alternatively wait for your credits to be replenished.
+      properties:
+        status:
+          type: string
+          description: >
+            The error status is an identifier for the type of error that
+            occurred.
+          enum:
+            - internal_server
+            - invalid_api_key
+            - missing_api_key
+            - rate_limit_exceeded
+            - under_maintenance
+            - not_found
+            - validation
+            - insufficient_credits
+            - invalid_body
+            - insufficient_plan
+            - api_access_disabled
+          example: insufficient_credits
+          pattern: ^insufficient_credits$
+        message:
+          type: string
+          description: >
+            A human-readable message describing the error. This message is
+            intended to be read by a developer and is
+
+            not suitable for display to an end user.
+          example: You don't have enough credits to perform this request.
+      example:
+        status: insufficient_credits
+        message: You don't have enough credits to perform this request.
+    PaymentRequiredError:
+      title: Payment Required Error
+      type: object
+      description: >
+        The payment required error object is returned in the response body of
+        any request that results a
+
+        `402 Payment Required` error.
+      oneOf:
+        - $ref: '#/components/schemas/InsufficientPlanError'
+        - $ref: '#/components/schemas/InsufficientCreditsError'
+      discriminator:
+        propertyName: status
+        mapping:
+          insufficient_plan: '#/components/schemas/InsufficientPlanError'
+          insufficient_credits: '#/components/schemas/InsufficientCreditsError'
+  responses:
+    GetAccount:
+      description: >
+        The account object is returned in the response body of a successful
+        request to get account information.
+      headers:
+        X-AlsoAsked-Credits:
+          $ref: '#/components/headers/X-AlsoAsked-Credits'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Account'
+          examples:
+            default:
+              summary: Get account response example
+              description: >
+                The following example shows the response body of a successful
+                request to get account information.
+              value:
+                id: 6G8QgoK9ar0E1pB7Rl0LN5mxljdAvBWb
+                name: Mantis Toboggan
+                email: mantis.toboggan@gmail.com
+                plan_type: pro
+                credits: 100
+                credit_reset_date: '2023-02-01T00:00:00Z'
+                registration_date: '2023-01-01T00:00:00Z'
+    MissingApiKeyError:
+      description: >
+        The API key provided in the request header is missing. This error is
+        returned when no API key is provided in the
+
+        request header.
+      headers:
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            default:
+              summary: Missing API key error response example
+              description: >
+                The following example shows the response body of an unauthorized
+                error. This error is returned when no
+
+                API key is provided in the request header.
+              value:
+                status: missing_api_key
+                message: No API key has been specified.
+    InsufficientPlanError:
+      description: >
+        Your account's plan doesn't allow you to perform this request. You can
+        upgrade your account to the Pro plan to access
+
+        the live API.
+      headers:
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            default:
+              summary: Insufficient plan error response example
+              description: >
+                The following example shows the response body of an insufficient
+                plan error. This error is returned when
+
+                your account's plan doesn't allow you to perform this request.
+              value:
+                status: insufficient_plan
+                message: >-
+                  You must upgrade your account to a Pro plan to access the live
+                  API.
+    ForbiddenError:
+      description: >
+        The forbidden error object is returned in the response body of any
+        request that results a `403 Forbidden` error.
+      headers:
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ForbiddenError'
+          examples:
+            InvalidApiKeyError:
+              summary: Invalid API key error response example
+              description: >
+                The following example shows the response body of an invalid API
+                key error. This error is returned when an
+
+                invalid API key is provided in the request header.
+              value:
+                status: invalid_api_key
+                message: The API key provided is invalid.
+            ApiAccessDisabledError:
+              summary: API access disabled error response example
+              description: >
+                The following example shows the response body of an api access
+                disabled error. This error is returned when
+
+                your account's API access has been revoked.
+              value:
+                status: api_access_disabled
+                message: >
+                  Your API access has been disabled. Please contact us through
+                  live chat or email support@alsoasked.com for
+
+                  more information.
+    RateLimitExceededError:
+      description: >
+        The "rate limit exceeded" error occurs when the client has made too many
+        requests in a short period of time.
+      headers:
+        Retry-After:
+          $ref: '#/components/headers/Retry-After'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+        X-RateLimit-Reset:
+          $ref: '#/components/headers/X-RateLimit-Reset'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            default:
+              summary: Rate limit exceeded error response example
+              description: >
+                The following example shows the response body of a rate limit
+                exceeded error. This error is returned when the
+
+                client has made too many requests in a short period of time.
+              value:
+                status: rate_limit_exceeded
+                message: The maximum number of requests per second have been exceeded.
+    InternalServerError:
+      description: >
+        An internal server error occurred. This error is returned when the
+        server encounters an unexpected issue
+
+        while processing the request.
+      headers:
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            default:
+              summary: Internal server error response example
+              description: >
+                The following example shows the response body of an internal
+                server error. This error is returned when the
+
+                server encounters an unexpected issue while processing the
+                request.
+              value:
+                status: internal_server
+                message: An internal server error has occurred.
+    UnderMaintenanceError:
+      description: >
+        The API is currently under maintenance. This error is returned when the
+        API is temporarily unavailable due to
+
+        maintenance.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            default:
+              summary: Under maintenance error response example
+              description: >
+                The following example shows the response body of an under
+                maintenance error. This error is returned when the
+
+                API is temporarily unavailable due to maintenance.
+              value:
+                status: under_maintenance
+                message: The API is currently under maintenance.
+    ListSearches:
+      description: >
+        The paginated search results object is returned in the response body of
+        a successful request for previous search
+
+        requests.
+      headers:
+        X-AlsoAsked-Credits:
+          $ref: '#/components/headers/X-AlsoAsked-Credits'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaginatedSearchRequests'
+          examples:
+            default:
+              summary: List searches response example
+              description: >
+                The following example shows the response body of a successful
+                request to list previous search requests.
+              value:
+                total: 32
+                page: 1
+                results:
+                  - id: 9J1VrsN0ku2E6xW8M5Xh3zylpfZgIcba
+                    terms:
+                      - When to plant out broad beans?
+                      - How to grow broad beans?
+                      - When to harvest broad beans?
+                    language: en
+                    region: us
+                    status: success
+                    deleted: false
+                    depth: 2
+                    cached: false
+                    created_at: '2023-01-01T00:00:00Z'
+                    updated_at: '2023-01-01T00:00:10Z'
+                    cached_at: '2023-01-01T00:00:10Z'
+                  - id: 7T1aKjx9Vb8YX2tksUeQwTPn6N0ku2E6
+                    terms:
+                      - What are the best pasta recipes?
+                    language: en
+                    region: gb
+                    status: success
+                    deleted: false
+                    depth: 2
+                    cached: true
+                    created_at: '2023-01-05T10:30:00Z'
+                    updated_at: '2023-01-05T10:32:00Z'
+                    cached_at: '2023-01-04T03:48:00Z'
+                  - id: 5S8YdxC3vq9M5zF1Vb4Xh3zylpfZgIba
+                    terms: null
+                    language: null
+                    region: null
+                    status: null
+                    deleted: true
+                    depth: null
+                    cached: null
+                    created_at: '2023-01-10T15:00:00Z'
+                    updated_at: '2023-01-10T15:05:00Z'
+                    cached_at: null
+                  - id: 8A6Wp1vHt3E4q0F7c9Xs5n8oZu2Bm1dL
+                    terms:
+                      - Wie kann man Energie sparen?
+                      - Was sind die besten Tipps zum Energiesparen?
+                      - Wie senke ich meinen Energieverbrauch?
+                    language: de
+                    region: de
+                    status: success
+                    deleted: false
+                    depth: 3
+                    cached: false
+                    created_at: '2023-01-15T18:45:00Z'
+                    updated_at: '2023-01-15T18:50:00Z'
+                    cached_at: '2023-01-15T18:50:00Z'
+    ValidationError:
+      description: |
+        The validation error occurs when the request input data is invalid.
+      headers:
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            default:
+              summary: Validation error response example
+              description: >
+                The following example shows the response body of validation
+                error. This error is returned when the request
+
+                input data is invalid.
+              value:
+                status: validation
+                message: >-
+                  Value "101" for argument "count" is invalid for Request [get
+                  /search].
+    PerformSearch:
+      description: >
+        The search request results object is returned after performing a search
+        request, containing details such as the terms,
+
+        language, and region used in the search request, as well as the status
+        of the request itself. If the search request
+
+        has completed successfully, the object also contains the search results.
+      headers:
+        X-AlsoAsked-Credits:
+          $ref: '#/components/headers/X-AlsoAsked-Credits'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SearchRequestResults'
+          examples:
+            default:
+              summary: Perform search response example
+              description: >
+                The following example shows the response body of a successful
+                request to perform a search request.
+              value:
+                id: 9J1VrsN0ku2E6xW8M5Xh3zylpfZgIcba
+                queries:
+                  - term: When to plant out broad beans?
+                    language_fallback: false
+                    region_fallback: false
+                    results:
+                      - question: When to plant out broad beans?
+                        answer_excerpt: >
+                          Broad beans can be planted out from mid-April to
+                          mid-May. If you are growing them in a greenhouse, you
+                          can
+
+                          plant them out from mid-March.
+                        answer_href: >-
+                          https://www.gardenersworld.com/how-to/grow/broad-beans/when-to-plant-out-broad-beans/
+                        answer_page_title: >-
+                          When to plant out broad beans? | Broad beans | Grow |
+                          Gardeners' World Magazine
+                        results:
+                          - question: When can I transplant broad beans?
+                            answer_excerpt: >
+                              Broad beans prefer to be planted in the position
+                              where they are to grow, but can be planted in
+                              individual
+
+                              pots during the autumn and transplanted in to the
+                              ground in the spring.
+                            answer_href: >
+                              https://www.rhs.org.uk/education-learning/gardening-children-schools/family-activities/grow-it/grow/broad-beans
+                            answer_page_title: Grow broad beans with children / RHS Gardening
+                            results:
+                              - question: Do you get a second crop of broad beans?
+                                answer_excerpt: >
+                                  Broad beans are a cool season crop, so they
+                                  will not produce a second crop. However, you
+                                  can plant
+
+                                  broad beans in the spring and again in the
+                                  fall.
+                                answer_href: >-
+                                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                                answer_page_title: Growing Broad Beans - Gardening Know How
+                                results: []
+                              - question: What not to plant with broad beans?
+                                answer_excerpt: >
+                                  Broad beans are a cool season crop, so they
+                                  will not produce a second crop. However, you
+                                  can plant
+
+                                  broad beans in the spring and again in the
+                                  fall.
+                                answer_href: >-
+                                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                                answer_page_title: Growing Broad Beans - Gardening Know How
+                                results: []
+                              - question: How to grow broad beans in a greenhouse?
+                                answer_excerpt: >
+                                  Broad beans are a cool season crop, so they
+                                  will not produce a second crop. However, you
+                                  can plant
+
+                                  broad beans in the spring and again in the
+                                  fall.
+                                answer_href: >-
+                                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                                answer_page_title: Growing Broad Beans - Gardening Know How
+                                results: []
+                          - question: Do broad beans need to be dried before planting?
+                            answer_excerpt: >
+                              Next to potatoes, broad beans are one of the
+                              easiest staples to grow. Dried broad beans, or
+                              fava beans, are
+
+                              simply beans left in the pod until they rattle.
+                              When you've had your fill of fresh, leave the rest
+                              on the
+
+                              plant to dry. If it's wet, haul the pods indoors,
+                              to shell and dry somewhere warm.
+                            answer_href: >-
+                              https://www.gardeningknowhow.com/edible/vegetables/broad-bean/drying-broad-beans.htm
+                            answer_page_title: Drying Broad Beans - Gardening Know How
+                            results: []
+                language: en
+                region: us
+                status: success
+                deleted: false
+                depth: 2
+                cached: true
+                created_at: '2023-01-01T00:00:00Z'
+                updated_at: '2023-01-01T00:00:10Z'
+                cached_at: '2022-12-31T00:00:00Z'
+    InvalidBodyError:
+      description: >
+        The request body is invalid. This error is returned when the request
+        body isn't valid JSON or when the request body
+
+        content type isn't `application/json`.
+      headers:
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            default:
+              summary: Invalid body error response example
+              description: >
+                The following example shows the response body of an invalid body
+                error. This error is returned when the
+
+                request body isn't valid JSON or when the request body content
+                type isn't `application/json`.
+              value:
+                status: invalid_body
+                message: The request body is invalid.
+    PaymentRequiredError:
+      description: >
+        The payment required error object is returned in the response body of
+        any request that results a
+
+        `402 Payment Required` error.
+      headers:
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentRequiredError'
+          examples:
+            InsufficientPlanError:
+              summary: Insufficient plan error response example
+              description: >
+                The following example shows the response body of an insufficient
+                plan error. This error is returned when
+
+                your account's plan doesn't allow you to perform this request.
+              value:
+                status: insufficient_plan
+                message: >-
+                  You must upgrade your account to a Pro plan to access the live
+                  API.
+            InsufficientCreditsError:
+              summary: Insufficient credits error response example
+              description: >
+                The following example shows the response body of an insufficient
+                credits error. This error is returned when
+
+                you don't have enough credits to perform this request.
+              value:
+                status: insufficient_credits
+                message: You don't have enough credits to perform this request.
+    GetSearch:
+      description: >
+        The search request results object is returned when getting the details
+        of a search request, containing details such
+
+        as the terms, language, and region used in the search request, as well
+        as the status. If the search request has
+
+        completed successfully, the object also contains the search results.
+      headers:
+        X-AlsoAsked-Credits:
+          $ref: '#/components/headers/X-AlsoAsked-Credits'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SearchRequestResults'
+          examples:
+            default:
+              summary: Get search response example
+              description: >
+                The following example shows the response body of a successful
+                request to get the results of a search request.
+              value:
+                id: 9J1VrsN0ku2E6xW8M5Xh3zylpfZgIcba
+                queries:
+                  - term: When to plant out broad beans?
+                    language_fallback: false
+                    region_fallback: false
+                    results:
+                      - question: When to plant out broad beans?
+                        answer_excerpt: >
+                          Broad beans can be planted out from mid-April to
+                          mid-May. If you are growing them in a greenhouse, you
+                          can
+
+                          plant them out from mid-March.
+                        answer_href: >-
+                          https://www.gardenersworld.com/how-to/grow/broad-beans/when-to-plant-out-broad-beans/
+                        answer_page_title: >-
+                          When to plant out broad beans? | Broad beans | Grow |
+                          Gardeners' World Magazine
+                        results:
+                          - question: When can I transplant broad beans?
+                            answer_excerpt: >
+                              Broad beans prefer to be planted in the position
+                              where they are to grow, but can be planted in
+                              individual
+
+                              pots during the autumn and transplanted in to the
+                              ground in the spring.
+                            answer_href: >
+                              https://www.rhs.org.uk/education-learning/gardening-children-schools/family-activities/grow-it/grow/broad-beans
+                            answer_page_title: Grow broad beans with children / RHS Gardening
+                            results:
+                              - question: Do you get a second crop of broad beans?
+                                answer_excerpt: >
+                                  Broad beans are a cool season crop, so they
+                                  will not produce a second crop. However, you
+                                  can plant
+
+                                  broad beans in the spring and again in the
+                                  fall.
+                                answer_href: >-
+                                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                                answer_page_title: Growing Broad Beans - Gardening Know How
+                                results: []
+                              - question: What not to plant with broad beans?
+                                answer_excerpt: >
+                                  Broad beans are a cool season crop, so they
+                                  will not produce a second crop. However, you
+                                  can plant
+
+                                  broad beans in the spring and again in the
+                                  fall.
+                                answer_href: >-
+                                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                                answer_page_title: Growing Broad Beans - Gardening Know How
+                                results: []
+                              - question: How to grow broad beans in a greenhouse?
+                                answer_excerpt: >
+                                  Broad beans are a cool season crop, so they
+                                  will not produce a second crop. However, you
+                                  can plant
+
+                                  broad beans in the spring and again in the
+                                  fall.
+                                answer_href: >-
+                                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                                answer_page_title: Growing Broad Beans - Gardening Know How
+                                results: []
+                          - question: Do broad beans need to be dried before planting?
+                            answer_excerpt: >
+                              Next to potatoes, broad beans are one of the
+                              easiest staples to grow. Dried broad beans, or
+                              fava beans, are
+
+                              simply beans left in the pod until they rattle.
+                              When you've had your fill of fresh, leave the rest
+                              on the
+
+                              plant to dry. If it's wet, haul the pods indoors,
+                              to shell and dry somewhere warm.
+                            answer_href: >-
+                              https://www.gardeningknowhow.com/edible/vegetables/broad-bean/drying-broad-beans.htm
+                            answer_page_title: Drying Broad Beans - Gardening Know How
+                            results: []
+                language: en
+                region: us
+                status: success
+                deleted: false
+                depth: 2
+                cached: true
+                created_at: '2023-01-01T00:00:00Z'
+                updated_at: '2023-01-01T00:00:10Z'
+                cached_at: '2022-12-31T00:00:00Z'
+    NotFoundError:
+      description: |
+        The requested resource wasn't found.
+      headers:
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          examples:
+            default:
+              summary: Not found error response example
+              description: >
+                The following example shows the response body of a not found
+                error. This error is returned when the requested
+
+                resource wasn't found.
+              value:
+                status: not_found
+                message: The requested resource could not be found.
+    DeleteSearch:
+      description: >
+        The empty response is returned after a successful request to delete a
+        search request.
+      headers:
+        X-AlsoAsked-Credits:
+          $ref: '#/components/headers/X-AlsoAsked-Credits'
+        X-RateLimit-Remaining:
+          $ref: '#/components/headers/X-RateLimit-Remaining'
+        X-RateLimit-Limit:
+          $ref: '#/components/headers/X-RateLimit-Limit'
+  parameters:
+    count:
+      name: count
+      in: query
+      description: |
+        The number of results to return.
+      required: false
+      allowEmptyValue: false
+      schema:
+        type: integer
+        default: 10
+        minimum: 1
+        maximum: 100
+      example: 10
+    page:
+      name: page
+      in: query
+      description: |
+        The page of results to return.
+      required: false
+      allowEmptyValue: false
+      schema:
+        type: integer
+        default: 1
+        minimum: 1
+      example: 1
+    X-AlsoAsked-Credits:
+      name: X-AlsoAsked-Credits
+      in: header
+      description: |
+        The number of credits remaining in the account.
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+      example: 100
+    X-AlsoAsked-Api-Version:
+      name: X-AlsoAsked-Api-Version
+      in: header
+      description: >
+        The version of the AlsoAsked API that the webhook originated from. The
+        version is in the major.minor format.
+      required: true
+      schema:
+        type: string
+        pattern: ^[0-9]+\.[0-9]+$
+        minLength: 3
+        maxLength: 9
+      example: '1.0'
+    X-AlsoAsked-Signature:
+      name: X-AlsoAsked-Signature
+      in: header
+      description: >
+        The signature of the webhook request. The signature is generated using
+        the HMAC-HSA384 algorithm and the
+
+        webhook signing key. The signature is in the hex format. You should use
+        this signature to verify that the
+
+        webhook request originated from AlsoAsked.
+
+        You can verify the signature using the pseudo code
+        `hex(HMAC-HSA384(signingKey, requestBody + '.' + headerTimestamp))`
+
+        where `requestBody` is the JSON string of the request body and
+        `headerTimestamp` is the value of the
+
+        `X-AlsoAsked-Timestamp` header.
+      required: true
+      schema:
+        type: string
+        pattern: ^[a-fA-F0-9]{96}$
+        minLength: 96
+        maxLength: 96
+      example: >-
+        edd3bf9297835c7b02a41e0f4f188a17e9f50c235cc322eddda3780dbd817c932e9c913d2600415a56679a9c4f0cb550
+    X-AlsoAsked-Timestamp:
+      name: X-AlsoAsked-Timestamp
+      in: header
+      description: >
+        The timestamp of the webhook request in UTC epoch seconds. You should
+        use this timestamp to prevent
+
+        [replay attacks](https://en.wikipedia.org/wiki/Replay_attack) against
+        your webhook endpoint.
+      required: true
+      schema:
+        type: integer
+        format: int64
+        minimum: 0
+      example: 1672531200
+    X-AlsoAsked-Webhook-Event:
+      name: X-AlsoAsked-Webhook-Event
+      in: header
+      description: |
+        The type of webhook event that is being sent.
+      required: true
+      schema:
+        type: string
+        enum:
+          - search_created
+          - search_started
+          - search_succeeded
+          - search_failed
+      example: search_succeeded
+    X-AlsoAsked-Environment:
+      name: X-AlsoAsked-Environment
+      in: header
+      description: |
+        The environment which the webhook event originates from.
+      required: true
+      schema:
+        type: string
+        enum:
+          - live
+          - sandbox
+      example: live
+    searchId:
+      name: searchId
+      in: path
+      description: |
+        The ID of the search request.
+      required: true
+      schema:
+        type: string
+        pattern: ^[a-zA-Z0-9]{32}$
+        minLength: 32
+        maxLength: 32
+      example: 4S7HdxC3vq9M5zF1Vb8YX2tksUeQwTPn
+  requestBodies:
+    PerformSearch:
+      description: >
+        The perform search object is sent in the request body of a request to
+        perform synchronous searches, containing details
+
+        such as The terms to search for and the language and region to search
+        in.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SearchRequestOptions'
+          examples:
+            default:
+              summary: Perform search example
+              description: >
+                The following example shows the request body of a request to
+                perform a search.
+              value:
+                terms:
+                  - When to plant out broad beans?
+                  - How to grow broad beans?
+                  - When to harvest broad beans?
+                language: en
+                region: us
+                depth: 2
+                fresh: false
+                async: false
+                notify_webhooks: false
+    StatusChangedWebhook:
+      description: >
+        The status changed webhook object is sent in the request body of a
+        webhook notification when a search request's status
+
+        has changed. If the status of the search is `completed`, the object also
+        contains the search results.
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/SearchRequestResults'
+          examples:
+            default:
+              summary: Status changed webhook request example
+              description: >
+                The following example shows the request body of a webhook
+                notification when a search request's status has
+
+                changed.
+              value:
+                id: 9J1VrsN0ku2E6xW8M5Xh3zylpfZgIcba
+                queries:
+                  - term: When to plant out broad beans?
+                    language_fallback: false
+                    region_fallback: false
+                    results:
+                      - question: When to plant out broad beans?
+                        answer_excerpt: >
+                          Broad beans can be planted out from mid-April to
+                          mid-May. If you are growing them in a greenhouse, you
+                          can
+
+                          plant them out from mid-March.
+                        answer_href: >-
+                          https://www.gardenersworld.com/how-to/grow/broad-beans/when-to-plant-out-broad-beans/
+                        answer_page_title: >-
+                          When to plant out broad beans? | Broad beans | Grow |
+                          Gardeners' World Magazine
+                        results:
+                          - question: When can I transplant broad beans?
+                            answer_excerpt: >
+                              Broad beans prefer to be planted in the position
+                              where they are to grow, but can be planted in
+                              individual
+
+                              pots during the autumn and transplanted in to the
+                              ground in the spring.
+                            answer_href: >
+                              https://www.rhs.org.uk/education-learning/gardening-children-schools/family-activities/grow-it/grow/broad-beans
+                            answer_page_title: Grow broad beans with children / RHS Gardening
+                            results:
+                              - question: Do you get a second crop of broad beans?
+                                answer_excerpt: >
+                                  Broad beans are a cool season crop, so they
+                                  will not produce a second crop. However, you
+                                  can plant
+
+                                  broad beans in the spring and again in the
+                                  fall.
+                                answer_href: >-
+                                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                                answer_page_title: Growing Broad Beans - Gardening Know How
+                                results: []
+                              - question: What not to plant with broad beans?
+                                answer_excerpt: >
+                                  Broad beans are a cool season crop, so they
+                                  will not produce a second crop. However, you
+                                  can plant
+
+                                  broad beans in the spring and again in the
+                                  fall.
+                                answer_href: >-
+                                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                                answer_page_title: Growing Broad Beans - Gardening Know How
+                                results: []
+                              - question: How to grow broad beans in a greenhouse?
+                                answer_excerpt: >
+                                  Broad beans are a cool season crop, so they
+                                  will not produce a second crop. However, you
+                                  can plant
+
+                                  broad beans in the spring and again in the
+                                  fall.
+                                answer_href: >-
+                                  https://www.gardeningknowhow.com/edible/vegetables/broad-bean/growing-broad-beans.htm
+                                answer_page_title: Growing Broad Beans - Gardening Know How
+                                results: []
+                          - question: Do broad beans need to be dried before planting?
+                            answer_excerpt: >
+                              Next to potatoes, broad beans are one of the
+                              easiest staples to grow. Dried broad beans, or
+                              fava beans, are
+
+                              simply beans left in the pod until they rattle.
+                              When you've had your fill of fresh, leave the rest
+                              on the
+
+                              plant to dry. If it's wet, haul the pods indoors,
+                              to shell and dry somewhere warm.
+                            answer_href: >-
+                              https://www.gardeningknowhow.com/edible/vegetables/broad-bean/drying-broad-beans.htm
+                            answer_page_title: Drying Broad Beans - Gardening Know How
+                            results: []
+                language: en
+                region: us
+                status: success
+                deleted: false
+                depth: 2
+                cached: true
+                created_at: '2023-01-01T00:00:00Z'
+                updated_at: '2023-01-01T00:00:10Z'
+                cached_at: '2022-12-31T00:00:00Z'
+  securitySchemes:
+    apiKey:
+      type: apiKey
+      in: header
+      name: X-Api-Key
+      description: >
+        API key required to authenticate requests to the AlsoAsked API. An API
+        key can be obtained by registering for an
+
+        account and creating a key under the developer settings. The key must be
+        passed in the header of each request
+
+        with the key name `X-Api-Key`. Without an API key, all requests will be
+        rejected.

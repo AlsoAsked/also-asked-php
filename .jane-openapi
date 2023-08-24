@@ -1,0 +1,16 @@
+<?php
+
+return [
+    'openapi-file' => __DIR__ . '/openapi.yaml',
+    'namespace' => 'AlsoAsked\Api',
+    'directory' => __DIR__ . '/generated',
+    'use-fixer' => true,
+    'fixer-config-file' => __DIR__ . '/.php-cs-fixer.php',
+    'date-prefer-interface' => true,
+    'throw-unexpected-status-code' => true,
+    'whitelisted-paths' => [
+        '\/account$',
+        '\/search$',
+        '\/search\/{searchId}$',
+    ],
+];

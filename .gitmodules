@@ -1,0 +1,3 @@
+[submodule "api-specification"]
+	path = api-specification
+	url = git@github.com:AlsoAsked/also-asked-api-specification.git
