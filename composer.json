@@ -1,7 +1,7 @@
 {
     "name": "alsoasked/also-asked-php",
     "description": "A PHP library for the AlsoAsked API",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "homepage": "https://alsoasked.com",
     "type": "library",
     "license": "MIT",
