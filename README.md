@@ -25,58 +25,77 @@ To install the bindings via [Composer](https://getcomposer.org/), add the follow
 
 Then run `composer install`
 
-## Getting Started
+## Examples
 
-The below example will fetch your account details from the **Live** API, check you have enough credits, and then search for the term `cars` in US English.
+### Creating a client
 
-You'll need to change `your-api-key` to the API key you've created, if you don't have an API key, follow the [authentication guide](https://developers.alsoasked.com/docs/also-asked/j389o9lgezike-authentication).
+You'll need to begin by creating a client for the API you wish to use, as well as specify the API key you wish to use.
 
-If you wish to run this against the **Sandbox** API, then change `https://alsoaskedapi.com/v1` in the `BaseUriPlugin` to `https://sandbox.alsoaskedapi.com/v1`.
+We do this by first creating an HTTP client respecting the [PSR-18](https://www.php-fig.org/psr/psr-18/) standard.
+
+The `\Http\Discovery\Psr18ClientDiscovery` class will automatically discover an PSR-18 HTTP client from the installed composer packages, meaning you'll need an HTTP client installed which implements PSR-18 if you don't already.
+
+A common HTTP client which does is [Guzzle](https://docs.guzzlephp.org/en/stable/), we can install this by running `composer require guzzlehttp/guzzle:^7.0`.
+
+The example below creates a client for the **Live** API by setting a base URI using the `\Http\Client\Common\Plugin\BaseUriPlugin` plugin. If you wish to use the **Sandbox** API, you can change the base URI from `https://alsoaskedapi.com/v1` to `https://sandbox.alsoaskedapi.com/v1`.
+
+You'll need to change the API specified in the `\AlsoAsked\Api\Authentication\ApiKeyAuthentication` plugin from `your-api-key` to the API key you've created. If you don't have an API key, follow the [authentication guide](https://developers.alsoasked.com/docs/also-asked/j389o9lgezike-authentication).
 
 ```php
 <?php
 
-declare(strict_types=1);
-
-use AlsoAsked\Api\Authentication\ApiKeyAuthentication;
-use AlsoAsked\Api\Client;
-use AlsoAsked\Api\Model\SearchRequestOptions;
-use AlsoAsked\Api\Model\SearchResult;
-use Http\Client\Common\Plugin\BaseUriPlugin;
-use Http\Client\Common\PluginClientBuilder;
-use Http\Discovery\Psr18ClientDiscovery;
-use Http\Discovery\UriFactoryDiscovery;
-use Jane\Component\OpenApiRuntime\Client\Plugin\AuthenticationRegistry;
-
-require_once 'vendor/autoload.php';
-
-$httpClient = (new PluginClientBuilder())
-    // add a base URI plugin to point to the live API url
-    ->addPlugin(new BaseUriPlugin(UriFactoryDiscovery::find()->createUri('https://alsoaskedapi.com/v1')))
-    // add an authentication plugin to add the API key
-    ->addPlugin(new AuthenticationRegistry([new ApiKeyAuthentication('your-api-key')]))
+$httpClient = (new \Http\Client\Common\PluginClientBuilder())
+    // add a base URI plugin to point to the live API URL
+    ->addPlugin(new \Http\Client\Common\Plugin\BaseUriPlugin(
+        \Http\Discovery\UriFactoryDiscovery::find()
+            ->createUri('https://alsoaskedapi.com/v1'),
+    ))
+    // add an authentication plugin to add the API key header
+    ->addPlugin(new \Jane\Component\OpenApiRuntime\Client\Plugin\AuthenticationRegistry([
+        new \AlsoAsked\Api\Authentication\ApiKeyAuthentication('your-api-key'),
+    ]))
     // create the PSR-18 HTTP client
-    ->createClient(Psr18ClientDiscovery::find());
+    ->createClient(\Http\Discovery\Psr18ClientDiscovery::find());
 
 // create the API client with the PSR-18 HTTP client
-$apiClient = Client::create($httpClient);
+$apiClient = \AlsoAsked\Api\Client::create($httpClient);
+```
 
-// fetch our account details
+### Fetching your account details
 
+Use `getAccount` to fetch your account details, this calls the [`GET /v1/account`](https://developers.alsoasked.com/docs/also-asked/b3b98451f0ae2-get-account-information) API endpoint.
+
+```php
 /**
  * @var \AlsoAsked\Api\Model\Account
  */
 $account = $apiClient->getAccount();
 
-// check if the account has any credits left
-if ($account->getCredits() === 0) {
-    echo 'You have no credits left, please top up your account.';
+echo 'Account ID: ' . $account->getId() . \PHP_EOL;
+echo 'Name: ' . $account->getName() . \PHP_EOL;
+echo 'Email: ' . $account->getEmail() . \PHP_EOL;
+echo 'Plan Type: ' . $account->getPlanType() . \PHP_EOL;
+echo 'Credits: ' . $account->getCredits() . \PHP_EOL;
+echo 'Credits Reset At: ' . $account->getCreditsResetAt()->format(DateTimeInterface::ISO8601_EXPANDED) . \PHP_EOL;
+echo 'Registered At: ' . $account->getRegisteredAt()->format(DateTimeInterface::ISO8601_EXPANDED) . \PHP_EOL;
 
-    exit;
-}
+// outputs:
+//
+// Account ID: 6G8QgoK9ar0E1pB7Rl0LN5mxljdAvBWb
+// Name: Mantis Toboggan
+// Email: mantis.toboggan@gmail.com
+// Plan Type: pro
+// Credits: 100
+// Credits Reset At: +2023-09-14T01:19:27+00:00
+// Registered At: +2022-03-23T17:54:19+00:00
+```
 
-// define the options for a search request
-$request = (new SearchRequestOptions())
+### Perform a search
+
+Use `performSearch` to perform a search request, this calls the [`POST /v1/search`](https://developers.alsoasked.com/docs/also-asked/61f57d877f150-perform-search) API endpoint.
+
+```php
+$request = (new \AlsoAsked\Api\Model\SearchRequestOptions())
     ->setTerms(['cars'])
     ->setLanguage('en')
     ->setRegion('us')
@@ -85,8 +104,6 @@ $request = (new SearchRequestOptions())
     ->setAsync(false)
     ->setNotifyWebhooks(true);
 
-// perform a search request in US English for the term 'cars'
-
 /**
  * @var \AlsoAsked\Api\Model\SearchRequestResults
  */
@@ -94,7 +111,7 @@ $results = $apiClient->performSearch($request);
 
 // ensure the search request was successful
 if ($results->getStatus() !== 'success') {
-    echo 'The search request doesn\'t have the "success" status: ' . $results->getStatus();
+    echo 'We expected the status to be "success", but encountered ' . $results->getStatus();
 
     exit;
 }
@@ -106,7 +123,7 @@ if ($results->getStatus() !== 'success') {
  *
  * @return void
  */
-function printResult(SearchResult $result): void
+function printResult(\AlsoAsked\Api\Model\SearchResult $result): void
 {
     echo '- Question: ' . $result->getQuestion() . \PHP_EOL;
 
@@ -125,7 +142,20 @@ foreach ($results->getQueries() as $query) {
         \printResult($result);
     }
 }
+
+// outputs:
+//
+// Term: cars
+// Results:
+// - Question: What are 10 best cars to buy?
+// - Question: What are top 5 most reliable cars?
+// - Question: What is the #1 most reliable car?
+// - Question: Who is car 20 in Cars?
+// - Question: Who owns Towbin Dodge now?
+// - Question: What kind of car is Mater?
+// ...
 ```
+
 ## Help
 
 If you need more information, see the [developer documentation](https://developers.alsoasked.com), or get in touch with us at [help@alsoasked.com](mailto:help@alsoasked.com).
