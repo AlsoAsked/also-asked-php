@@ -1,7 +1,8 @@
 {
   "name": "also-asked-php",
-  "packageManager": "yarn@3.6.1",
-  "dependencies": {
-    "@apiture/openapi-down-convert": "^0.8.0"
+  "devDependencies": {
+    "@apiture/openapi-down-convert": "^0.8.0",
+    "@iwavesmedia/semantic-release-composer": "^1.0.0",
+    "semantic-release": "^21.1.1"
   }
 }
