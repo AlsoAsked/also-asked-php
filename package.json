@@ -6,5 +6,8 @@
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
     "semantic-release": "^21.1.1"
+  },
+  "scripts": {
+    "downgrade-openapi": "openapi-down-convert -i api-specification/openapi/openapi.yaml -o openapi.yaml"
   }
 }
