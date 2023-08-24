@@ -3,6 +3,7 @@
   "devDependencies": {
     "@apiture/openapi-down-convert": "^0.8.0",
     "@iwavesmedia/semantic-release-composer": "^1.0.0",
+    "@semantic-release/changelog": "^6.0.3",
     "semantic-release": "^21.1.1"
   }
 }
