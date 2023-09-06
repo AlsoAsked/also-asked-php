@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/AlsoAsked/also-asked-php/compare/v1.0.1...v1.1.0) (2023-09-06)
+
+
+### Features
+
+* add web credits and API credits to the account response ([7528ef3](https://github.com/AlsoAsked/also-asked-php/commit/7528ef3cb669530ea60b940eee688de798a62110))
+
 ## [1.0.1](https://github.com/AlsoAsked/also-asked-php/compare/v1.0.0...v1.0.1) (2023-08-24)
 
 
