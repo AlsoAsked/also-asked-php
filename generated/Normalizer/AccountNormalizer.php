@@ -79,6 +79,16 @@ class AccountNormalizer implements DenormalizerAwareInterface, DenormalizerInter
             unset($data['credits']);
         }
 
+        if (\array_key_exists('web_credits', $data)) {
+            $object->setWebCredits($data['web_credits']);
+            unset($data['web_credits']);
+        }
+
+        if (\array_key_exists('api_credits', $data)) {
+            $object->setApiCredits($data['api_credits']);
+            unset($data['api_credits']);
+        }
+
         if (\array_key_exists('credits_reset_at', $data)) {
             $object->setCreditsResetAt(\DateTime::createFromFormat('Y-m-d\\TH:i:sP', $data['credits_reset_at']));
             unset($data['credits_reset_at']);
@@ -127,6 +137,14 @@ class AccountNormalizer implements DenormalizerAwareInterface, DenormalizerInter
 
         if ($object->isInitialized('credits') && $object->getCredits() !== null) {
             $data['credits'] = $object->getCredits();
+        }
+
+        if ($object->isInitialized('webCredits') && $object->getWebCredits() !== null) {
+            $data['web_credits'] = $object->getWebCredits();
+        }
+
+        if ($object->isInitialized('apiCredits') && $object->getApiCredits() !== null) {
+            $data['api_credits'] = $object->getApiCredits();
         }
 
         if ($object->isInitialized('creditsResetAt') && $object->getCreditsResetAt() !== null) {

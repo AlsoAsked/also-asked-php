@@ -370,8 +370,29 @@ components:
           type: integer
           format: int64
           minimum: 0
-          description: |
-            The number of credits remaining in the account.
+          description: >
+            The number of credits remaining in the account. This is the sum of
+            the account's web credits and API credits.
+          example: 100
+        web_credits:
+          type: integer
+          format: int64
+          minimum: 0
+          description: >
+            The number of web credits remaining in the account. Web credits are
+            used to pay for both web requests through the
+
+            AlsoAsked website and API requests through the AlsoAsked API.
+          example: 100
+        api_credits:
+          type: integer
+          format: int64
+          minimum: 0
+          description: >
+            The number of API credits remaining in the account. API credits are
+            used to pay for API requests through the
+
+            AlsoAsked API, once the account's web credits have been exhausted.
           example: 100
         credits_reset_at:
           type: string
@@ -392,7 +413,9 @@ components:
         name: Mantis Toboggan
         email: mantis.toboggan@gmail.com
         plan_type: pro
-        credits: 100
+        credits: 110
+        web_credits: 100
+        api_credits: 10
         credits_reset_at: '2023-02-01T00:00:00Z'
         registered_at: '2023-01-01T00:00:00Z'
     Error:
@@ -2496,7 +2519,9 @@ components:
                 name: Mantis Toboggan
                 email: mantis.toboggan@gmail.com
                 plan_type: pro
-                credits: 100
+                credits: 110
+                web_credits: 100
+                api_credits: 10
                 credits_reset_at: '2023-02-01T00:00:00Z'
                 registered_at: '2023-01-01T00:00:00Z'
     MissingApiKeyError:

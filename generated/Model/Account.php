@@ -45,11 +45,27 @@ class Account extends \ArrayObject
     protected $planType;
 
     /**
-     * The number of credits remaining in the account.
+     * The number of credits remaining in the account. This is the sum of the account's web credits and API credits.
      *
      * @var int
      */
     protected $credits;
+
+    /**
+     * The number of web credits remaining in the account. Web credits are used to pay for both web requests through the
+     * AlsoAsked website and API requests through the AlsoAsked API.
+     *
+     * @var int
+     */
+    protected $webCredits;
+
+    /**
+     * The number of API credits remaining in the account. API credits are used to pay for API requests through the
+     * AlsoAsked API, once the account's web credits have been exhausted.
+     *
+     * @var int
+     */
+    protected $apiCredits;
 
     /**
      * The account credit reset date is the date and time at which the account credits will be reset to default.
@@ -166,7 +182,7 @@ class Account extends \ArrayObject
     }
 
     /**
-     * The number of credits remaining in the account.
+     * The number of credits remaining in the account. This is the sum of the account's web credits and API credits.
      *
      * @return int
      */
@@ -176,7 +192,7 @@ class Account extends \ArrayObject
     }
 
     /**
-     * The number of credits remaining in the account.
+     * The number of credits remaining in the account. This is the sum of the account's web credits and API credits.
      *
      * @param int $credits
      *
@@ -186,6 +202,60 @@ class Account extends \ArrayObject
     {
         $this->initialized['credits'] = true;
         $this->credits = $credits;
+
+        return $this;
+    }
+
+    /**
+     * The number of web credits remaining in the account. Web credits are used to pay for both web requests through the
+     * AlsoAsked website and API requests through the AlsoAsked API.
+     *
+     * @return int
+     */
+    public function getWebCredits(): int
+    {
+        return $this->webCredits;
+    }
+
+    /**
+     * The number of web credits remaining in the account. Web credits are used to pay for both web requests through the
+     * AlsoAsked website and API requests through the AlsoAsked API.
+     *
+     * @param int $webCredits
+     *
+     * @return self
+     */
+    public function setWebCredits(int $webCredits): self
+    {
+        $this->initialized['webCredits'] = true;
+        $this->webCredits = $webCredits;
+
+        return $this;
+    }
+
+    /**
+     * The number of API credits remaining in the account. API credits are used to pay for API requests through the
+     * AlsoAsked API, once the account's web credits have been exhausted.
+     *
+     * @return int
+     */
+    public function getApiCredits(): int
+    {
+        return $this->apiCredits;
+    }
+
+    /**
+     * The number of API credits remaining in the account. API credits are used to pay for API requests through the
+     * AlsoAsked API, once the account's web credits have been exhausted.
+     *
+     * @param int $apiCredits
+     *
+     * @return self
+     */
+    public function setApiCredits(int $apiCredits): self
+    {
+        $this->initialized['apiCredits'] = true;
+        $this->apiCredits = $apiCredits;
 
         return $this;
     }
