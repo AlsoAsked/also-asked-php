@@ -27,7 +27,7 @@ class SearchRequestResults extends \ArrayObject
      * The search queries that were performed as part of the request. If the search request was deleted, this value will
      * be null.
      *
-     * @var array<SearchQuery>|null
+     * @var list<SearchQuery>|null
      */
     protected $queries;
 
@@ -46,6 +46,20 @@ class SearchRequestResults extends \ArrayObject
      * @var string|null
      */
     protected $region;
+
+    /**
+     * The latitude used when performing a search. If the search request was deleted, this value will be null.
+     *
+     * @var float|null
+     */
+    protected $latitude;
+
+    /**
+     * The longitude used when performing a search. If the search request was deleted, this value will be null.
+     *
+     * @var float|null
+     */
+    protected $longitude;
 
     /**
      * The status of the search request. If the search request was deleted, this value will be null.
@@ -127,7 +141,7 @@ class SearchRequestResults extends \ArrayObject
      * The search queries that were performed as part of the request. If the search request was deleted, this value will
      * be null.
      *
-     * @return array<SearchQuery>|null
+     * @return list<SearchQuery>|null
      */
     public function getQueries(): ?array
     {
@@ -138,7 +152,7 @@ class SearchRequestResults extends \ArrayObject
      * The search queries that were performed as part of the request. If the search request was deleted, this value will
      * be null.
      *
-     * @param array<SearchQuery>|null $queries
+     * @param list<SearchQuery>|null $queries
      *
      * @return self
      */
@@ -200,6 +214,56 @@ class SearchRequestResults extends \ArrayObject
     {
         $this->initialized['region'] = true;
         $this->region = $region;
+
+        return $this;
+    }
+
+    /**
+     * The latitude used when performing a search. If the search request was deleted, this value will be null.
+     *
+     * @return float|null
+     */
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * The latitude used when performing a search. If the search request was deleted, this value will be null.
+     *
+     * @param float|null $latitude
+     *
+     * @return self
+     */
+    public function setLatitude(?float $latitude): self
+    {
+        $this->initialized['latitude'] = true;
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    /**
+     * The longitude used when performing a search. If the search request was deleted, this value will be null.
+     *
+     * @return float|null
+     */
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * The longitude used when performing a search. If the search request was deleted, this value will be null.
+     *
+     * @param float|null $longitude
+     *
+     * @return self
+     */
+    public function setLongitude(?float $longitude): self
+    {
+        $this->initialized['longitude'] = true;
+        $this->longitude = $longitude;
 
         return $this;
     }

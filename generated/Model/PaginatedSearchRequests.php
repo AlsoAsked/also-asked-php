@@ -33,7 +33,7 @@ class PaginatedSearchRequests extends \ArrayObject
     /**
      * The list of search requests.
      *
-     * @var array<SearchRequest>
+     * @var list<SearchRequest>
      */
     protected $results;
 
@@ -90,7 +90,7 @@ class PaginatedSearchRequests extends \ArrayObject
     /**
      * The list of search requests.
      *
-     * @return array<SearchRequest>
+     * @return list<SearchRequest>
      */
     public function getResults(): array
     {
@@ -100,7 +100,7 @@ class PaginatedSearchRequests extends \ArrayObject
     /**
      * The list of search requests.
      *
-     * @param array<SearchRequest> $results
+     * @param list<SearchRequest> $results
      *
      * @return self
      */

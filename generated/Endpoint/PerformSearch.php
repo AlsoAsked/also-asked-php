@@ -38,10 +38,8 @@ class PerformSearch extends \AlsoAsked\Api\Runtime\Client\BaseEndpoint implement
         return '/search';
     }
 
-    public function getBody(
-        \Symfony\Component\Serializer\SerializerInterface $serializer,
-        $streamFactory = null,
-    ): array {
+    public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
+    {
         if ($this->body instanceof \AlsoAsked\Api\Model\SearchRequestOptions) {
             return [['Content-Type' => ['application/json']], $serializer->serialize($this->body, 'json')];
         }
@@ -78,15 +76,15 @@ class PerformSearch extends \AlsoAsked\Api\Runtime\Client\BaseEndpoint implement
         $body = (string) $response->getBody();
 
         if (\is_null($contentType) === false && ($status === 200 && \mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\SearchRequestResults', 'json');
+            return $serializer->deserialize($body, 'AlsoAsked\Api\Model\SearchRequestResults', 'json');
         }
 
         if (\is_null($contentType) === false && ($status === 400 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\PerformSearchBadRequestException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\PerformSearchBadRequestException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 401 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\PerformSearchUnauthorizedException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\PerformSearchUnauthorizedException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 402 && \mb_strpos($contentType, 'application/json') !== false)) {
@@ -98,19 +96,19 @@ class PerformSearch extends \AlsoAsked\Api\Runtime\Client\BaseEndpoint implement
         }
 
         if (\is_null($contentType) === false && ($status === 422 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\PerformSearchUnprocessableEntityException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\PerformSearchUnprocessableEntityException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 429 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\PerformSearchTooManyRequestsException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\PerformSearchTooManyRequestsException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 500 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\PerformSearchInternalServerErrorException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\PerformSearchInternalServerErrorException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 503 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\PerformSearchServiceUnavailableException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\PerformSearchServiceUnavailableException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         throw new \AlsoAsked\Api\Exception\UnexpectedStatusCodeException($status, $body);

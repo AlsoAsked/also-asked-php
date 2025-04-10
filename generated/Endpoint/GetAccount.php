@@ -18,10 +18,8 @@ class GetAccount extends \AlsoAsked\Api\Runtime\Client\BaseEndpoint implements \
         return '/account';
     }
 
-    public function getBody(
-        \Symfony\Component\Serializer\SerializerInterface $serializer,
-        $streamFactory = null,
-    ): array {
+    public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
+    {
         return [[], null];
     }
 
@@ -52,15 +50,15 @@ class GetAccount extends \AlsoAsked\Api\Runtime\Client\BaseEndpoint implements \
         $body = (string) $response->getBody();
 
         if (\is_null($contentType) === false && ($status === 200 && \mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Account', 'json');
+            return $serializer->deserialize($body, 'AlsoAsked\Api\Model\Account', 'json');
         }
 
         if (\is_null($contentType) === false && ($status === 401 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\GetAccountUnauthorizedException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\GetAccountUnauthorizedException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 402 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\GetAccountPaymentRequiredException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\GetAccountPaymentRequiredException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 403 && \mb_strpos($contentType, 'application/json') !== false)) {
@@ -68,15 +66,15 @@ class GetAccount extends \AlsoAsked\Api\Runtime\Client\BaseEndpoint implements \
         }
 
         if (\is_null($contentType) === false && ($status === 429 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\GetAccountTooManyRequestsException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\GetAccountTooManyRequestsException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 500 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\GetAccountInternalServerErrorException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\GetAccountInternalServerErrorException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 503 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\GetAccountServiceUnavailableException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\GetAccountServiceUnavailableException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         throw new \AlsoAsked\Api\Exception\UnexpectedStatusCodeException($status, $body);

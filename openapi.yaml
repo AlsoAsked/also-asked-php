@@ -886,6 +886,22 @@ components:
 
             request was deleted, this value will be null.
           example: us
+        latitude:
+          type: number
+          format: double
+          nullable: true
+          description: >
+            The latitude used when performing a search. If the search request
+            was deleted, this value will be null.
+          example: 51.5072
+        longitude:
+          type: number
+          format: double
+          nullable: true
+          description: >
+            The longitude used when performing a search. If the search request
+            was deleted, this value will be null.
+          example: 0.1276
         status:
           anyOf:
             - type: string
@@ -959,6 +975,8 @@ components:
           - When to harvest broad beans?
         language: en
         region: us
+        latitude: 51.5072
+        longitude: 0.1276
         status: success
         deleted: false
         depth: 2
@@ -1001,6 +1019,8 @@ components:
                 - When to harvest broad beans?
               language: en
               region: us
+              latitude: 51.5072
+              longitude: 0.1276
               status: success
               deleted: false
               depth: 2
@@ -1013,6 +1033,8 @@ components:
                 - What are the best pasta recipes?
               language: en
               region: gb
+              latitude: null
+              longitude: null
               status: success
               deleted: false
               depth: 2
@@ -1038,6 +1060,8 @@ components:
                 - Wie senke ich meinen Energieverbrauch?
               language: de
               region: de
+              latitude: 51.5072
+              longitude: 0.1276
               status: success
               deleted: false
               depth: 3
@@ -1056,6 +1080,8 @@ components:
               - When to harvest broad beans?
             language: en
             region: us
+            latitude: 51.5072
+            longitude: 0.1276
             status: success
             deleted: false
             depth: 2
@@ -1068,6 +1094,8 @@ components:
               - What are the best pasta recipes?
             language: en
             region: gb
+            latitude: null
+            longitude: null
             status: success
             deleted: false
             depth: 2
@@ -1079,6 +1107,8 @@ components:
             terms: null
             language: null
             region: null
+            latitude: null
+            longitude: null
             status: null
             deleted: true
             depth: null
@@ -1093,6 +1123,8 @@ components:
               - Wie senke ich meinen Energieverbrauch?
             language: de
             region: de
+            latitude: 51.5072
+            longitude: 0.1276
             status: success
             deleted: false
             depth: 3
@@ -1477,6 +1509,22 @@ components:
             webhook notifications.
           example: true
           default: true
+        latitude:
+          type: number
+          format: double
+          minimum: -90
+          maximum: 90
+          description: |
+            The latitude of the location to perform the search in.
+          example: 51.5072
+        longitude:
+          type: number
+          format: double
+          minimum: -180
+          maximum: 180
+          description: |
+            The longitude of the location to perform the search in.
+          example: 0.1276
       required:
         - terms
       example:
@@ -1486,6 +1534,8 @@ components:
           - When to harvest broad beans?
         language: en
         region: us
+        latitude: 51.5072
+        longitude: 0.1276
         depth: 2
         fresh: false
         async: false
@@ -2253,6 +2303,22 @@ components:
             - zm
             - zw
           example: us
+        latitude:
+          type: number
+          format: double
+          nullable: true
+          description: >
+            The latitude used when performing a search. If the search request
+            was deleted, this value will be null.
+          example: 51.5072
+        longitude:
+          type: number
+          format: double
+          nullable: true
+          description: >
+            The longitude used when performing a search. If the search request
+            was deleted, this value will be null.
+          example: 0.1276
         status:
           type: string
           nullable: true
@@ -2391,6 +2457,8 @@ components:
                     results: []
         language: en
         region: us
+        latitude: 51.5072
+        longitude: 0.1276
         status: success
         deleted: false
         depth: 2
@@ -2726,6 +2794,8 @@ components:
                       - When to harvest broad beans?
                     language: en
                     region: us
+                    latitude: 51.5072
+                    longitude: 0.1276
                     status: success
                     deleted: false
                     depth: 2
@@ -2738,6 +2808,8 @@ components:
                       - What are the best pasta recipes?
                     language: en
                     region: gb
+                    latitude: null
+                    longitude: null
                     status: success
                     deleted: false
                     depth: 2
@@ -2749,6 +2821,8 @@ components:
                     terms: null
                     language: null
                     region: null
+                    latitude: null
+                    longitude: null
                     status: null
                     deleted: true
                     depth: null
@@ -2763,6 +2837,8 @@ components:
                       - Wie senke ich meinen Energieverbrauch?
                     language: de
                     region: de
+                    latitude: 51.5072
+                    longitude: 0.1276
                     status: success
                     deleted: false
                     depth: 3
@@ -2907,6 +2983,8 @@ components:
                             results: []
                 language: en
                 region: us
+                latitude: 51.5072
+                longitude: 0.1276
                 status: success
                 deleted: false
                 depth: 2
@@ -3091,6 +3169,8 @@ components:
                             results: []
                 language: en
                 region: us
+                latitude: 51.5072
+                longitude: 0.1276
                 status: success
                 deleted: false
                 depth: 2
@@ -3288,6 +3368,8 @@ components:
                   - When to harvest broad beans?
                 language: en
                 region: us
+                latitude: 51.5072
+                longitude: 0.1276
                 depth: 2
                 fresh: false
                 async: false
@@ -3398,6 +3480,8 @@ components:
                             results: []
                 language: en
                 region: us
+                latitude: 51.5072
+                longitude: 0.1276
                 status: success
                 deleted: false
                 depth: 2

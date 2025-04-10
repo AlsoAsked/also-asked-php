@@ -7,6 +7,7 @@ namespace AlsoAsked\Api\Normalizer;
 use AlsoAsked\Api\Runtime\Normalizer\CheckArray;
 use AlsoAsked\Api\Runtime\Normalizer\ValidatorTrait;
 use Jane\Component\JsonSchemaRuntime\Reference;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\DenormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
@@ -14,114 +15,220 @@ use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
-class PaginatedSearchRequestsNormalizer implements DenormalizerAwareInterface, DenormalizerInterface, NormalizerAwareInterface, NormalizerInterface
-{
-    use CheckArray;
-    use DenormalizerAwareTrait;
-    use NormalizerAwareTrait;
-    use ValidatorTrait;
-
-    public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
+if (!\class_exists(Kernel::class) || (Kernel::MAJOR_VERSION >= 7 || Kernel::MAJOR_VERSION === 6 && Kernel::MINOR_VERSION === 4)) {
+    class PaginatedSearchRequestsNormalizer implements DenormalizerAwareInterface, DenormalizerInterface, NormalizerAwareInterface, NormalizerInterface
     {
-        return $type === 'AlsoAsked\\Api\\Model\\PaginatedSearchRequests';
-    }
+        use CheckArray;
+        use DenormalizerAwareTrait;
+        use NormalizerAwareTrait;
+        use ValidatorTrait;
 
-    public function supportsNormalization($data, $format = null, array $context = []): bool
-    {
-        return \is_object($data) && $data::class === 'AlsoAsked\\Api\\Model\\PaginatedSearchRequests';
-    }
-
-    /**
-     * @param mixed $data
-     * @param mixed $class
-     * @param mixed|null $format
-     * @param array $context
-     *
-     * @return mixed
-     */
-    public function denormalize($data, $class, $format = null, array $context = [])
-    {
-        if (isset($data['$ref'])) {
-            return new Reference($data['$ref'], $context['document-origin']);
+        public function supportsDenormalization(
+            mixed $data,
+            string $type,
+            ?string $format = null,
+            array $context = [],
+        ): bool {
+            return $type === \AlsoAsked\Api\Model\PaginatedSearchRequests::class;
         }
 
-        if (isset($data['$recursiveRef'])) {
-            return new Reference($data['$recursiveRef'], $context['document-origin']);
+        public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
+        {
+            return \is_object($data) && $data::class === \AlsoAsked\Api\Model\PaginatedSearchRequests::class;
         }
-        $object = new \AlsoAsked\Api\Model\PaginatedSearchRequests();
 
-        if ($data === null || \is_array($data) === false) {
+        public function denormalize(mixed $data, string $type, ?string $format = null, array $context = []): mixed
+        {
+            if (isset($data['$ref'])) {
+                return new Reference($data['$ref'], $context['document-origin']);
+            }
+
+            if (isset($data['$recursiveRef'])) {
+                return new Reference($data['$recursiveRef'], $context['document-origin']);
+            }
+            $object = new \AlsoAsked\Api\Model\PaginatedSearchRequests();
+
+            if ($data === null || \is_array($data) === false) {
+                return $object;
+            }
+
+            if (\array_key_exists('total', $data)) {
+                $object->setTotal($data['total']);
+                unset($data['total']);
+            }
+
+            if (\array_key_exists('page', $data)) {
+                $object->setPage($data['page']);
+                unset($data['page']);
+            }
+
+            if (\array_key_exists('results', $data)) {
+                $values = [];
+
+                foreach ($data['results'] as $value) {
+                    $values[] = $this->denormalizer->denormalize($value, \AlsoAsked\Api\Model\SearchRequest::class, 'json', $context);
+                }
+                $object->setResults($values);
+                unset($data['results']);
+            }
+
+            foreach ($data as $key => $value_1) {
+                if (\preg_match('/.*/', (string) $key)) {
+                    $object[$key] = $value_1;
+                }
+            }
+
             return $object;
         }
 
-        if (\array_key_exists('total', $data)) {
-            $object->setTotal($data['total']);
-            unset($data['total']);
-        }
+        public function normalize(
+            mixed $object,
+            ?string $format = null,
+            array $context = [],
+        ): array|string|int|float|bool|\ArrayObject|null {
+            $data = [];
 
-        if (\array_key_exists('page', $data)) {
-            $object->setPage($data['page']);
-            unset($data['page']);
-        }
-
-        if (\array_key_exists('results', $data)) {
-            $values = [];
-
-            foreach ($data['results'] as $value) {
-                $values[] = $this->denormalizer->denormalize($value, 'AlsoAsked\\Api\\Model\\SearchRequest', 'json', $context);
+            if ($object->isInitialized('total') && $object->getTotal() !== null) {
+                $data['total'] = $object->getTotal();
             }
-            $object->setResults($values);
-            unset($data['results']);
-        }
 
-        foreach ($data as $key => $value_1) {
-            if (\preg_match('/.*/', (string) $key)) {
-                $object[$key] = $value_1;
+            if ($object->isInitialized('page') && $object->getPage() !== null) {
+                $data['page'] = $object->getPage();
             }
+
+            if ($object->isInitialized('results') && $object->getResults() !== null) {
+                $values = [];
+
+                foreach ($object->getResults() as $value) {
+                    $values[] = $this->normalizer->normalize($value, 'json', $context);
+                }
+                $data['results'] = $values;
+            }
+
+            foreach ($object as $key => $value_1) {
+                if (\preg_match('/.*/', (string) $key)) {
+                    $data[$key] = $value_1;
+                }
+            }
+
+            return $data;
         }
 
-        return $object;
+        public function getSupportedTypes(?string $format = null): array
+        {
+            return [\AlsoAsked\Api\Model\PaginatedSearchRequests::class => false];
+        }
     }
-
-    /**
-     * @param mixed $object
-     * @param mixed|null $format
-     * @param array $context
-     *
-     * @return array|\ArrayObject|bool|float|int|string|null
-     */
-    public function normalize($object, $format = null, array $context = [])
+} else {
+    class PaginatedSearchRequestsNormalizer implements DenormalizerAwareInterface, DenormalizerInterface, NormalizerAwareInterface, NormalizerInterface
     {
-        $data = [];
+        use CheckArray;
+        use DenormalizerAwareTrait;
+        use NormalizerAwareTrait;
+        use ValidatorTrait;
 
-        if ($object->isInitialized('total') && $object->getTotal() !== null) {
-            $data['total'] = $object->getTotal();
+        public function supportsDenormalization($data, $type, ?string $format = null, array $context = []): bool
+        {
+            return $type === \AlsoAsked\Api\Model\PaginatedSearchRequests::class;
         }
 
-        if ($object->isInitialized('page') && $object->getPage() !== null) {
-            $data['page'] = $object->getPage();
+        public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
+        {
+            return \is_object($data) && $data::class === \AlsoAsked\Api\Model\PaginatedSearchRequests::class;
         }
 
-        if ($object->isInitialized('results') && $object->getResults() !== null) {
-            $values = [];
-
-            foreach ($object->getResults() as $value) {
-                $values[] = $this->normalizer->normalize($value, 'json', $context);
+        /**
+         * @param mixed $data
+         * @param mixed $type
+         * @param mixed|null $format
+         * @param array $context
+         *
+         * @return mixed
+         */
+        public function denormalize($data, $type, $format = null, array $context = [])
+        {
+            if (isset($data['$ref'])) {
+                return new Reference($data['$ref'], $context['document-origin']);
             }
-            $data['results'] = $values;
-        }
 
-        foreach ($object as $key => $value_1) {
-            if (\preg_match('/.*/', (string) $key)) {
-                $data[$key] = $value_1;
+            if (isset($data['$recursiveRef'])) {
+                return new Reference($data['$recursiveRef'], $context['document-origin']);
             }
+            $object = new \AlsoAsked\Api\Model\PaginatedSearchRequests();
+
+            if ($data === null || \is_array($data) === false) {
+                return $object;
+            }
+
+            if (\array_key_exists('total', $data)) {
+                $object->setTotal($data['total']);
+                unset($data['total']);
+            }
+
+            if (\array_key_exists('page', $data)) {
+                $object->setPage($data['page']);
+                unset($data['page']);
+            }
+
+            if (\array_key_exists('results', $data)) {
+                $values = [];
+
+                foreach ($data['results'] as $value) {
+                    $values[] = $this->denormalizer->denormalize($value, \AlsoAsked\Api\Model\SearchRequest::class, 'json', $context);
+                }
+                $object->setResults($values);
+                unset($data['results']);
+            }
+
+            foreach ($data as $key => $value_1) {
+                if (\preg_match('/.*/', (string) $key)) {
+                    $object[$key] = $value_1;
+                }
+            }
+
+            return $object;
         }
 
-        return $data;
-    }
+        /**
+         * @param mixed $object
+         * @param mixed|null $format
+         * @param array $context
+         *
+         * @return array|\ArrayObject|bool|float|int|string|null
+         */
+        public function normalize($object, $format = null, array $context = [])
+        {
+            $data = [];
 
-    public function getSupportedTypes(?string $format = null): array
-    {
-        return ['AlsoAsked\\Api\\Model\\PaginatedSearchRequests' => false];
+            if ($object->isInitialized('total') && $object->getTotal() !== null) {
+                $data['total'] = $object->getTotal();
+            }
+
+            if ($object->isInitialized('page') && $object->getPage() !== null) {
+                $data['page'] = $object->getPage();
+            }
+
+            if ($object->isInitialized('results') && $object->getResults() !== null) {
+                $values = [];
+
+                foreach ($object->getResults() as $value) {
+                    $values[] = $this->normalizer->normalize($value, 'json', $context);
+                }
+                $data['results'] = $values;
+            }
+
+            foreach ($object as $key => $value_1) {
+                if (\preg_match('/.*/', (string) $key)) {
+                    $data[$key] = $value_1;
+                }
+            }
+
+            return $data;
+        }
+
+        public function getSupportedTypes(?string $format = null): array
+        {
+            return [\AlsoAsked\Api\Model\PaginatedSearchRequests::class => false];
+        }
     }
 }

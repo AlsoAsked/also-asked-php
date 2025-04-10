@@ -43,7 +43,7 @@ class SearchQuery extends \ArrayObject
      * The list of question and answers for the search term. The list will be empty if the search request has not
      * completed successfully.
      *
-     * @var array<SearchResult>
+     * @var list<SearchResult>
      */
     protected $results;
 
@@ -130,7 +130,7 @@ class SearchQuery extends \ArrayObject
      * The list of question and answers for the search term. The list will be empty if the search request has not
      * completed successfully.
      *
-     * @return array<SearchResult>
+     * @return list<SearchResult>
      */
     public function getResults(): array
     {
@@ -141,7 +141,7 @@ class SearchQuery extends \ArrayObject
      * The list of question and answers for the search term. The list will be empty if the search request has not
      * completed successfully.
      *
-     * @param array<SearchResult> $results
+     * @param list<SearchResult> $results
      *
      * @return self
      */

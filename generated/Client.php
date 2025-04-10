@@ -4,24 +4,24 @@ declare(strict_types=1);
 
 namespace AlsoAsked\Api;
 
-class Client extends \AlsoAsked\Api\Runtime\Client\Client
+class Client extends Runtime\Client\Client
 {
     /**
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @throws \AlsoAsked\Api\Exception\GetAccountForbiddenException
-     * @throws \AlsoAsked\Api\Exception\GetAccountInternalServerErrorException
-     * @throws \AlsoAsked\Api\Exception\GetAccountPaymentRequiredException
-     * @throws \AlsoAsked\Api\Exception\GetAccountServiceUnavailableException
-     * @throws \AlsoAsked\Api\Exception\GetAccountTooManyRequestsException
-     * @throws \AlsoAsked\Api\Exception\GetAccountUnauthorizedException
-     * @throws \AlsoAsked\Api\Exception\UnexpectedStatusCodeException
+     * @throws Exception\GetAccountForbiddenException
+     * @throws Exception\GetAccountInternalServerErrorException
+     * @throws Exception\GetAccountPaymentRequiredException
+     * @throws Exception\GetAccountServiceUnavailableException
+     * @throws Exception\GetAccountTooManyRequestsException
+     * @throws Exception\GetAccountUnauthorizedException
+     * @throws Exception\UnexpectedStatusCodeException
      *
-     * @return \AlsoAsked\Api\Model\Account|\Psr\Http\Message\ResponseInterface
+     * @return Model\Account|\Psr\Http\Message\ResponseInterface
      */
     public function getAccount(string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \AlsoAsked\Api\Endpoint\GetAccount(), $fetch);
+        return $this->executeEndpoint(new Endpoint\GetAccount(), $fetch);
     }
 
     /**
@@ -36,20 +36,20 @@ class Client extends \AlsoAsked\Api\Runtime\Client\Client
      *
      * }
      *
-     * @throws \AlsoAsked\Api\Exception\ListSearchesForbiddenException
-     * @throws \AlsoAsked\Api\Exception\ListSearchesInternalServerErrorException
-     * @throws \AlsoAsked\Api\Exception\ListSearchesPaymentRequiredException
-     * @throws \AlsoAsked\Api\Exception\ListSearchesServiceUnavailableException
-     * @throws \AlsoAsked\Api\Exception\ListSearchesTooManyRequestsException
-     * @throws \AlsoAsked\Api\Exception\ListSearchesUnauthorizedException
-     * @throws \AlsoAsked\Api\Exception\ListSearchesUnprocessableEntityException
-     * @throws \AlsoAsked\Api\Exception\UnexpectedStatusCodeException
+     * @throws Exception\ListSearchesForbiddenException
+     * @throws Exception\ListSearchesInternalServerErrorException
+     * @throws Exception\ListSearchesPaymentRequiredException
+     * @throws Exception\ListSearchesServiceUnavailableException
+     * @throws Exception\ListSearchesTooManyRequestsException
+     * @throws Exception\ListSearchesUnauthorizedException
+     * @throws Exception\ListSearchesUnprocessableEntityException
+     * @throws Exception\UnexpectedStatusCodeException
      *
-     * @return \AlsoAsked\Api\Model\PaginatedSearchRequests|\Psr\Http\Message\ResponseInterface
+     * @return Model\PaginatedSearchRequests|\Psr\Http\Message\ResponseInterface
      */
     public function listSearches(array $queryParameters = [], string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \AlsoAsked\Api\Endpoint\ListSearches($queryParameters), $fetch);
+        return $this->executeEndpoint(new Endpoint\ListSearches($queryParameters), $fetch);
     }
 
     /**
@@ -65,26 +65,26 @@ class Client extends \AlsoAsked\Api\Runtime\Client\Client
      * Synchronous requests wait for a maximum of 90 seconds for the search to
      * complete, until which point the response is returned as if it was an asynchronous request.
      *
-     * @param \AlsoAsked\Api\Model\SearchRequestOptions $requestBody
+     * @param Model\SearchRequestOptions $requestBody
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @throws \AlsoAsked\Api\Exception\PerformSearchBadRequestException
-     * @throws \AlsoAsked\Api\Exception\PerformSearchForbiddenException
-     * @throws \AlsoAsked\Api\Exception\PerformSearchInternalServerErrorException
-     * @throws \AlsoAsked\Api\Exception\PerformSearchPaymentRequiredException
-     * @throws \AlsoAsked\Api\Exception\PerformSearchServiceUnavailableException
-     * @throws \AlsoAsked\Api\Exception\PerformSearchTooManyRequestsException
-     * @throws \AlsoAsked\Api\Exception\PerformSearchUnauthorizedException
-     * @throws \AlsoAsked\Api\Exception\PerformSearchUnprocessableEntityException
-     * @throws \AlsoAsked\Api\Exception\UnexpectedStatusCodeException
+     * @throws Exception\PerformSearchBadRequestException
+     * @throws Exception\PerformSearchForbiddenException
+     * @throws Exception\PerformSearchInternalServerErrorException
+     * @throws Exception\PerformSearchPaymentRequiredException
+     * @throws Exception\PerformSearchServiceUnavailableException
+     * @throws Exception\PerformSearchTooManyRequestsException
+     * @throws Exception\PerformSearchUnauthorizedException
+     * @throws Exception\PerformSearchUnprocessableEntityException
+     * @throws Exception\UnexpectedStatusCodeException
      *
-     * @return \AlsoAsked\Api\Model\SearchRequestResults|\Psr\Http\Message\ResponseInterface
+     * @return Model\SearchRequestResults|\Psr\Http\Message\ResponseInterface
      */
     public function performSearch(
         Model\SearchRequestOptions $requestBody,
         string $fetch = self::FETCH_OBJECT,
     ) {
-        return $this->executeEndpoint(new \AlsoAsked\Api\Endpoint\PerformSearch($requestBody), $fetch);
+        return $this->executeEndpoint(new Endpoint\PerformSearch($requestBody), $fetch);
     }
 
     /**
@@ -94,20 +94,20 @@ class Client extends \AlsoAsked\Api\Runtime\Client\Client
      * @param string $searchId the ID of the search request
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @throws \AlsoAsked\Api\Exception\DeleteSearchForbiddenException
-     * @throws \AlsoAsked\Api\Exception\DeleteSearchInternalServerErrorException
-     * @throws \AlsoAsked\Api\Exception\DeleteSearchNotFoundException
-     * @throws \AlsoAsked\Api\Exception\DeleteSearchPaymentRequiredException
-     * @throws \AlsoAsked\Api\Exception\DeleteSearchServiceUnavailableException
-     * @throws \AlsoAsked\Api\Exception\DeleteSearchTooManyRequestsException
-     * @throws \AlsoAsked\Api\Exception\DeleteSearchUnauthorizedException
-     * @throws \AlsoAsked\Api\Exception\UnexpectedStatusCodeException
+     * @throws Exception\DeleteSearchForbiddenException
+     * @throws Exception\DeleteSearchInternalServerErrorException
+     * @throws Exception\DeleteSearchNotFoundException
+     * @throws Exception\DeleteSearchPaymentRequiredException
+     * @throws Exception\DeleteSearchServiceUnavailableException
+     * @throws Exception\DeleteSearchTooManyRequestsException
+     * @throws Exception\DeleteSearchUnauthorizedException
+     * @throws Exception\UnexpectedStatusCodeException
      *
      * @return \Psr\Http\Message\ResponseInterface|null
      */
     public function deleteSearch(string $searchId, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \AlsoAsked\Api\Endpoint\DeleteSearch($searchId), $fetch);
+        return $this->executeEndpoint(new Endpoint\DeleteSearch($searchId), $fetch);
     }
 
     /**
@@ -116,31 +116,28 @@ class Client extends \AlsoAsked\Api\Runtime\Client\Client
      * @param string $searchId the ID of the search request
      * @param string $fetch Fetch mode to use (can be OBJECT or RESPONSE)
      *
-     * @throws \AlsoAsked\Api\Exception\GetSearchForbiddenException
-     * @throws \AlsoAsked\Api\Exception\GetSearchInternalServerErrorException
-     * @throws \AlsoAsked\Api\Exception\GetSearchNotFoundException
-     * @throws \AlsoAsked\Api\Exception\GetSearchPaymentRequiredException
-     * @throws \AlsoAsked\Api\Exception\GetSearchServiceUnavailableException
-     * @throws \AlsoAsked\Api\Exception\GetSearchTooManyRequestsException
-     * @throws \AlsoAsked\Api\Exception\GetSearchUnauthorizedException
-     * @throws \AlsoAsked\Api\Exception\UnexpectedStatusCodeException
+     * @throws Exception\GetSearchForbiddenException
+     * @throws Exception\GetSearchInternalServerErrorException
+     * @throws Exception\GetSearchNotFoundException
+     * @throws Exception\GetSearchPaymentRequiredException
+     * @throws Exception\GetSearchServiceUnavailableException
+     * @throws Exception\GetSearchTooManyRequestsException
+     * @throws Exception\GetSearchUnauthorizedException
+     * @throws Exception\UnexpectedStatusCodeException
      *
-     * @return \AlsoAsked\Api\Model\SearchRequestResults|\Psr\Http\Message\ResponseInterface
+     * @return Model\SearchRequestResults|\Psr\Http\Message\ResponseInterface
      */
     public function getSearch(string $searchId, string $fetch = self::FETCH_OBJECT)
     {
-        return $this->executeEndpoint(new \AlsoAsked\Api\Endpoint\GetSearch($searchId), $fetch);
+        return $this->executeEndpoint(new Endpoint\GetSearch($searchId), $fetch);
     }
 
-    public static function create(
-        $httpClient = null,
-        array $additionalPlugins = [],
-        array $additionalNormalizers = [],
-    ) {
+    public static function create($httpClient = null, array $additionalPlugins = [], array $additionalNormalizers = [])
+    {
         if ($httpClient === null) {
             $httpClient = \Http\Discovery\Psr18ClientDiscovery::find();
             $plugins = [];
-            $uri = \Http\Discovery\Psr17FactoryDiscovery::findUrlFactory()->createUri('https://alsoaskedapi.com/v1');
+            $uri = \Http\Discovery\Psr17FactoryDiscovery::findUriFactory()->createUri('https://alsoaskedapi.com/v1');
             $plugins[] = new \Http\Client\Common\Plugin\AddHostPlugin($uri);
             $plugins[] = new \Http\Client\Common\Plugin\AddPathPlugin($uri);
 
@@ -151,7 +148,7 @@ class Client extends \AlsoAsked\Api\Runtime\Client\Client
         }
         $requestFactory = \Http\Discovery\Psr17FactoryDiscovery::findRequestFactory();
         $streamFactory = \Http\Discovery\Psr17FactoryDiscovery::findStreamFactory();
-        $normalizers = [new \Symfony\Component\Serializer\Normalizer\ArrayDenormalizer(), new \AlsoAsked\Api\Normalizer\JaneObjectNormalizer()];
+        $normalizers = [new \Symfony\Component\Serializer\Normalizer\ArrayDenormalizer(), new Normalizer\JaneObjectNormalizer()];
 
         if (\count($additionalNormalizers) > 0) {
             $normalizers = \array_merge($normalizers, $additionalNormalizers);

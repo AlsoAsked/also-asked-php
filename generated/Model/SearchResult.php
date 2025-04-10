@@ -47,7 +47,7 @@ class SearchResult extends \ArrayObject
     /**
      * The list of child search results related to the search result's question.
      *
-     * @var array<self>
+     * @var list<self>
      */
     protected $results;
 
@@ -154,7 +154,7 @@ class SearchResult extends \ArrayObject
     /**
      * The list of child search results related to the search result's question.
      *
-     * @return array<self>
+     * @return list<self>
      */
     public function getResults(): array
     {
@@ -164,7 +164,7 @@ class SearchResult extends \ArrayObject
     /**
      * The list of child search results related to the search result's question.
      *
-     * @param array<self> $results
+     * @param list<self> $results
      *
      * @return self
      */

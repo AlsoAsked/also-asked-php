@@ -31,10 +31,8 @@ class DeleteSearch extends \AlsoAsked\Api\Runtime\Client\BaseEndpoint implements
         return \str_replace(['{searchId}'], [$this->searchId], '/search/{searchId}');
     }
 
-    public function getBody(
-        \Symfony\Component\Serializer\SerializerInterface $serializer,
-        $streamFactory = null,
-    ): array {
+    public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
+    {
         return [[], null];
     }
 
@@ -70,11 +68,11 @@ class DeleteSearch extends \AlsoAsked\Api\Runtime\Client\BaseEndpoint implements
         }
 
         if (\is_null($contentType) === false && ($status === 401 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\DeleteSearchUnauthorizedException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\DeleteSearchUnauthorizedException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 402 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\DeleteSearchPaymentRequiredException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\DeleteSearchPaymentRequiredException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 403 && \mb_strpos($contentType, 'application/json') !== false)) {
@@ -82,19 +80,19 @@ class DeleteSearch extends \AlsoAsked\Api\Runtime\Client\BaseEndpoint implements
         }
 
         if (\is_null($contentType) === false && ($status === 404 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\DeleteSearchNotFoundException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\DeleteSearchNotFoundException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 429 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\DeleteSearchTooManyRequestsException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\DeleteSearchTooManyRequestsException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 500 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\DeleteSearchInternalServerErrorException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\DeleteSearchInternalServerErrorException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 503 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\DeleteSearchServiceUnavailableException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\DeleteSearchServiceUnavailableException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         throw new \AlsoAsked\Api\Exception\UnexpectedStatusCodeException($status, $body);

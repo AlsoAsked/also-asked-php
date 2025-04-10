@@ -19,7 +19,7 @@ class SearchRequestOptions extends \ArrayObject
     /**
      * The terms to search for.
      *
-     * @var array<string>
+     * @var list<string>
      */
     protected $terms;
 
@@ -74,9 +74,23 @@ class SearchRequestOptions extends \ArrayObject
     protected $notifyWebhooks = true;
 
     /**
+     * The latitude of the location to perform the search in.
+     *
+     * @var float
+     */
+    protected $latitude;
+
+    /**
+     * The longitude of the location to perform the search in.
+     *
+     * @var float
+     */
+    protected $longitude;
+
+    /**
      * The terms to search for.
      *
-     * @return array<string>
+     * @return list<string>
      */
     public function getTerms(): array
     {
@@ -86,7 +100,7 @@ class SearchRequestOptions extends \ArrayObject
     /**
      * The terms to search for.
      *
-     * @param array<string> $terms
+     * @param list<string> $terms
      *
      * @return self
      */
@@ -260,6 +274,56 @@ class SearchRequestOptions extends \ArrayObject
     {
         $this->initialized['notifyWebhooks'] = true;
         $this->notifyWebhooks = $notifyWebhooks;
+
+        return $this;
+    }
+
+    /**
+     * The latitude of the location to perform the search in.
+     *
+     * @return float
+     */
+    public function getLatitude(): float
+    {
+        return $this->latitude;
+    }
+
+    /**
+     * The latitude of the location to perform the search in.
+     *
+     * @param float $latitude
+     *
+     * @return self
+     */
+    public function setLatitude(float $latitude): self
+    {
+        $this->initialized['latitude'] = true;
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    /**
+     * The longitude of the location to perform the search in.
+     *
+     * @return float
+     */
+    public function getLongitude(): float
+    {
+        return $this->longitude;
+    }
+
+    /**
+     * The longitude of the location to perform the search in.
+     *
+     * @param float $longitude
+     *
+     * @return self
+     */
+    public function setLongitude(float $longitude): self
+    {
+        $this->initialized['longitude'] = true;
+        $this->longitude = $longitude;
 
         return $this;
     }

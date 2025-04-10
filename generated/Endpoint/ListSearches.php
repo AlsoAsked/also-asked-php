@@ -34,10 +34,8 @@ class ListSearches extends \AlsoAsked\Api\Runtime\Client\BaseEndpoint implements
         return '/search';
     }
 
-    public function getBody(
-        \Symfony\Component\Serializer\SerializerInterface $serializer,
-        $streamFactory = null,
-    ): array {
+    public function getBody(\Symfony\Component\Serializer\SerializerInterface $serializer, $streamFactory = null): array
+    {
         return [[], null];
     }
 
@@ -81,15 +79,15 @@ class ListSearches extends \AlsoAsked\Api\Runtime\Client\BaseEndpoint implements
         $body = (string) $response->getBody();
 
         if (\is_null($contentType) === false && ($status === 200 && \mb_strpos($contentType, 'application/json') !== false)) {
-            return $serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\PaginatedSearchRequests', 'json');
+            return $serializer->deserialize($body, 'AlsoAsked\Api\Model\PaginatedSearchRequests', 'json');
         }
 
         if (\is_null($contentType) === false && ($status === 401 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\ListSearchesUnauthorizedException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\ListSearchesUnauthorizedException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 402 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\ListSearchesPaymentRequiredException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\ListSearchesPaymentRequiredException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 403 && \mb_strpos($contentType, 'application/json') !== false)) {
@@ -97,19 +95,19 @@ class ListSearches extends \AlsoAsked\Api\Runtime\Client\BaseEndpoint implements
         }
 
         if (\is_null($contentType) === false && ($status === 422 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\ListSearchesUnprocessableEntityException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\ListSearchesUnprocessableEntityException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 429 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\ListSearchesTooManyRequestsException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\ListSearchesTooManyRequestsException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 500 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\ListSearchesInternalServerErrorException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\ListSearchesInternalServerErrorException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         if (\is_null($contentType) === false && ($status === 503 && \mb_strpos($contentType, 'application/json') !== false)) {
-            throw new \AlsoAsked\Api\Exception\ListSearchesServiceUnavailableException($serializer->deserialize($body, 'AlsoAsked\\Api\\Model\\Error', 'json'), $response);
+            throw new \AlsoAsked\Api\Exception\ListSearchesServiceUnavailableException($serializer->deserialize($body, 'AlsoAsked\Api\Model\Error', 'json'), $response);
         }
 
         throw new \AlsoAsked\Api\Exception\UnexpectedStatusCodeException($status, $body);

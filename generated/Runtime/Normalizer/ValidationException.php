@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace AlsoAsked\Api\Runtime\Normalizer;
 
+use RuntimeException;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 
-class ValidationException extends \RuntimeException
+class ValidationException extends RuntimeException
 {
     /**
      * @var \Symfony\Component\Validator\ConstraintViolationListInterface
